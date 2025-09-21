@@ -75,8 +75,11 @@ class UpdateTicketCustomFieldsTests(TestCase):
                 # "title" missing
                 "body": "Test body",
                 "priority": 3,
+                # custom prefix is from CustomFieldMixin
+                "custom_extra_info": "My custom text",
             },
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "There are errors in the form")
         self.assertContains(response, "Extra Info")
+        self.assertContains(response, "My custom text")
