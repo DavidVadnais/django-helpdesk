@@ -1335,7 +1335,12 @@ class UpdateTicketView(
             }
         else:
             self.extra_context = {"xform": {}}
-        return super().get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+        ticket = self.get_object()
+        context["customfields_form"] = EditTicketCustomFieldForm(
+            self.request.POST or None, instance=ticket
+        )
+        return context
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
