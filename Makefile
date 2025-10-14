@@ -100,6 +100,7 @@ readme:
 # Requires using the PYTHONPATH prefix because the project directory is not set in the path
 .PHONY: demo
 demo:
+	make static-vendor
 	uv  sync  --all-extras --dev --group test --group teams
 	uv run manage.py migrate --noinput
 	# Install fixtures
@@ -129,7 +130,6 @@ STATIC_DIR := src/helpdesk/static/helpdesk/vendor
 
 
 # Use jq to read the top-level 'dependencies' keys from package.json
-# This is the correct way to get only the top-level packages (bootstrap, jquery, popper.js).
 # The tr command converts newlines to spaces for Make.
 VENDORS := $(shell jq -r '.dependencies | keys[]' package.json 2>/dev/null | tr '\n' ' ')
 
