@@ -14,6 +14,9 @@ make static-vendor
 # step 3 - Run project
 make rundemo
 
+# step 4 - clean up
+make distclean
+
 ```
 Note: The following libs are not currently in yarn
 * flot

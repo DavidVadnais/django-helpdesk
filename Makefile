@@ -48,6 +48,7 @@ distclean: clean
 	rm -rf helpdesk/attachments
 	# remove the django-created database
 	rm -f demodesk/*.sqlite3
+	find $(STATIC_DIR) -mindepth 1 -maxdepth 1 ! -name 'flot' ! -name 'README.md' ! -name 'flot-tooltip' ! -name 'morrisjs' ! -name 'timeline3' -exec rm -rf {} +
 
 
 #: maintainer-clean - Remove almost everything that can be re-generated.
