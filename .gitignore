@@ -28,6 +28,34 @@ demo/demodesk/media/helpdesk/attachments/DH-3/4/*
 !demo/demodesk/media/helpdesk/attachments/DH-3/4/helpdesk.png
 
 # Devbox
-.devbox 
+.devbox
 devbox.lock
 devbox.json
+
+
+# === Yarn core files ===
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+
+# If you use Yarn node_modules linker
+node_modules/
+
+# Yarn state files
+.pnp.*
+.yarnrc.yml
+
+# === Log / lock / cache ===
+yarn-error.log
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# === now ignore vendor files ===
+src/helpdesk/static/helpdesk/vendor/*
+
+# === make rundemo ===
+uv.lock
+demodesk/db.sqlite3
