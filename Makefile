@@ -100,6 +100,7 @@ readme:
 # Requires using the PYTHONPATH prefix because the project directory is not set in the path
 .PHONY: demo
 demo:
+	yarn install
 	make static-vendor
 	uv  sync  --all-extras --dev --group test --group teams
 	uv run manage.py migrate --noinput

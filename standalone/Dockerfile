@@ -1,5 +1,21 @@
-#see github workflows for docker build command
-FROM python:3.11-slim-bullseye
+# --- Stage 1: Build frontend assets ---
+FROM node:20 AS frontend-builder
+
+WORKDIR /opt/django-helpdesk
+
+# Copy only the files needed for Yarn install/build
+COPY django-helpdesk/package.json django-helpdesk/yarn.lock ./
+
+# Enable Corepack and install deps
+RUN corepack enable && corepack prepare yarn@4.9.4 --activate
+RUN yarn install
+
+# Copy source and build static assets
+COPY django-helpdesk/ .
+RUN yarn build:static
+
+# --- Stage 2: Main Django image ---FROM python:3.11-slim-bullseye
+FROM python:3.11-slim-bullseye AS app
 LABEL src=https://github.com/django-helpdesk/django-helpdesk
 RUN apt-get update
 RUN apt-get install -yqq \
@@ -11,6 +27,7 @@ RUN apt-get install -yqq \
 # Copy directories
 COPY django-helpdesk/src/ /opt/django-helpdesk/src/
 COPY django-helpdesk/standalone/ /opt/django-helpdesk/standalone/
+COPY --from=frontend-builder /opt/django-helpdesk/src/helpdesk/static/helpdesk/vendor /opt/django-helpdesk/src/helpdesk/static/helpdesk/vendor
 
 # Copy files
 COPY django-helpdesk/pyproject.toml /opt/django-helpdesk/
@@ -20,6 +37,7 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 RUN pip3 install --upgrade pip
 RUN pip3 install packaging
 WORKDIR /opt/django-helpdesk
+
 ENV UV_SYSTEM_PYTHON=1
 RUN uv sync
 RUN uv pip install -r /opt/django-helpdesk/standalone/requirements.txt
