@@ -238,6 +238,15 @@ $(STATIC_DIR)/%:
 			elif ls $$SRC_DIR/*.min.js >/dev/null 2>&1; then \
 				echo "  -> Copying root-level files (*.min.js only)..."; \
 				cp $$SRC_DIR/*.min.js $$DEST_DIR/; \
+			elif [ -d "$$SRC_DIR/js" ]; then \
+				echo "  -> Copying js/* and cs/* ..."; \
+				cp -r $$SRC_DIR/js $$DEST_DIR/; \
+				if [ -d "$$SRC_DIR/css" ]; then \
+					cp -r $$SRC_DIR/css $$DEST_DIR/; \
+				fi ;\
+				if [ -d "$$SRC_DIR/webfonts" ]; then \
+					cp -r $$SRC_DIR/webfonts $$DEST_DIR/; \
+				fi ;\
 			else \
 				echo "  -> WARNING: No standard dist folder found."; \
 				find $SRC_DIR -maxdepth 1 -type f \( -name "*.js" -o -name "*.css" -o -name "*.map" \) -exec cp {} $DEST_DIR/ \; 2>/dev/null || true; \
