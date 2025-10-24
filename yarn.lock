@@ -84,12 +84,64 @@ __metadata:
   languageName: node
   linkType: hard
 
-"datatables@npm:1.10":
-  version: 1.10.18
-  resolution: "datatables@npm:1.10.18"
+"datatables.net-bs4@npm:^1.10.15, datatables.net-bs4@npm:^1.10.25":
+  version: 1.13.11
+  resolution: "datatables.net-bs4@npm:1.13.11"
   dependencies:
+    datatables.net: "npm:1.13.11"
+    jquery: "npm:1.8 - 4"
+  checksum: 10c0/68f60f6208b2677ff622def4703b5feac20d926e0ba70e368c5dbf8975e5807ccc5ce18ebd9653346cabafdeb25102b3dd34a865b54c713941c17cf3c70863de
+  languageName: node
+  linkType: hard
+
+"datatables.net-buttons-bs4@npm:^1.7.1":
+  version: 1.7.1
+  resolution: "datatables.net-buttons-bs4@npm:1.7.1"
+  dependencies:
+    datatables.net-bs4: "npm:^1.10.15"
+    datatables.net-buttons: "npm:1.7.1"
     jquery: "npm:>=1.7"
-  checksum: 10c0/c7080486afe35016bc220ef5833c9134e1923975f621c3387892720d999e0c928751330eb8bdfb4e8cff70a6772b9b3631d07fb824aadc55a672700890739371
+  checksum: 10c0/97e8d66ff551fc082a5dbd4a50de2ddc0d6ebd48f8a88f75510025de20283f75f0b0d09aa6a41bfa206f02cd317d3884f37c0acee5edce26c7f87dcc02a86260
+  languageName: node
+  linkType: hard
+
+"datatables.net-buttons-dt@npm:^1.7.1":
+  version: 1.7.1
+  resolution: "datatables.net-buttons-dt@npm:1.7.1"
+  dependencies:
+    datatables.net-buttons: "npm:1.7.1"
+    datatables.net-dt: "npm:^1.10.15"
+    jquery: "npm:>=1.7"
+  checksum: 10c0/13ae595cb1bcaa3e4090f34a44b07ffd26273cc55c1d9e38cd12c3e1b28a480fe92a5b79ac02c500a37607b9ea6f76e20a86512284335415909fc08c318596f4
+  languageName: node
+  linkType: hard
+
+"datatables.net-buttons@npm:1.7.1, datatables.net-buttons@npm:^1.7.1":
+  version: 1.7.1
+  resolution: "datatables.net-buttons@npm:1.7.1"
+  dependencies:
+    datatables.net: "npm:^1.10.15"
+    jquery: "npm:>=1.7"
+  checksum: 10c0/f91c4549ae4efab43038fd6293bd14c8502790fea02197ab91cea6c1045cc46def7f5311c695173f62c2cbdc7ec73a5c94b3d4943c5c870376dd2df8f4d7f78c
+  languageName: node
+  linkType: hard
+
+"datatables.net-dt@npm:^1.10.15":
+  version: 1.13.11
+  resolution: "datatables.net-dt@npm:1.13.11"
+  dependencies:
+    datatables.net: "npm:1.13.11"
+    jquery: "npm:1.8 - 4"
+  checksum: 10c0/7c8181b7d2e84ce61ebca2877dbd9a4daf7df2fd5cf70feb01e4390c37b790ecc41ed4fce8d3547a2226e2a515a2083a3f2cd8848473d494682c4cd4218865f2
+  languageName: node
+  linkType: hard
+
+"datatables.net@npm:1.13.11, datatables.net@npm:^1.10.15, datatables.net@npm:^1.10.25":
+  version: 1.13.11
+  resolution: "datatables.net@npm:1.13.11"
+  dependencies:
+    jquery: "npm:1.8 - 4"
+  checksum: 10c0/943e3d64943dde2740880f5c193c75472e7877b4c2f197d6c0e5a99fdb148770542b1e3f66016ad596a14aaf5dab4202c4585e7a1aa8b9c4b7dd8782dbcfa0ac
   languageName: node
   linkType: hard
 
@@ -100,7 +152,11 @@ __metadata:
     bootstrap: "npm:4.6.1"
     bootstrap-social: "npm:5.1.1"
     chart.js: "npm:2.7.2"
-    datatables: "npm:1.10"
+    datatables.net: "npm:^1.10.25"
+    datatables.net-bs4: "npm:^1.10.25"
+    datatables.net-buttons: "npm:^1.7.1"
+    datatables.net-buttons-bs4: "npm:^1.7.1"
+    datatables.net-buttons-dt: "npm:^1.7.1"
     fontawesome-free: "npm:1.0.4"
     jquery: "npm:3.6.0"
     jquery-easing: "npm:0.0.1"
@@ -150,7 +206,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jquery@npm:*, jquery@npm:>=1.12.0 <5.0.0, jquery@npm:>=1.7":
+"jquery@npm:*, jquery@npm:1.8 - 4, jquery@npm:>=1.12.0 <5.0.0, jquery@npm:>=1.7":
   version: 3.7.1
   resolution: "jquery@npm:3.7.1"
   checksum: 10c0/808cfbfb758438560224bf26e17fcd5afc7419170230c810dd11f5c1792e2263e2970cca8d659eb84fcd9acc301edb6d310096e450277d54be4f57071b0c82d9

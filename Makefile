@@ -145,6 +145,118 @@ setup-vendor-dirs:
 # A Pattern Rule for copying each vendor
 # This rule applies to every vendor listed in the VENDORS variable
 $(STATIC_DIR)/%:
+	@VENDOR_NAME=$*; \
+	DEST_DIR=$(STATIC_DIR)/$$VENDOR_NAME; \
+	SRC_DIR=node_modules/$$VENDOR_NAME; \
+	echo "Processing vendor: $$VENDOR_NAME"; \
+	\
+	if [ ! -d "$$SRC_DIR" ]; then \
+		echo "  -> ERROR: $$SRC_DIR not found. Run 'yarn install' first."; \
+		exit 1; \
+	fi; \
+	\
+	case "$$VENDOR_NAME" in \
+		datatables) \
+			echo "  -> [CASE: datatables] Copying DataTables media contents..."; \
+			rm -rf $$DEST_DIR; \
+			mkdir -p $$DEST_DIR; \
+			if [ -d "$$SRC_DIR/media" ]; then \
+				cp -r $$SRC_DIR/media/* $$DEST_DIR/; \
+			fi; \
+			;; \
+		datatables.net) \
+			echo "  -> [CASE: datatables.net] Matched!"; \
+			DATATABLES_DIR=$(STATIC_DIR)/datatables; \
+			mkdir -p $$DATATABLES_DIR/js $$DATATABLES_DIR/css; \
+			if [ -d "$$SRC_DIR/js" ]; then \
+				cp $$SRC_DIR/js/*.js $$DATATABLES_DIR/js/ 2>/dev/null || true; \
+			fi; \
+			if [ -d "$$SRC_DIR/css" ]; then \
+				cp $$SRC_DIR/css/*.css $$DATATABLES_DIR/css/ 2>/dev/null || true; \
+			fi; \
+			rm -rf $$DEST_DIR; \
+			;; \
+		datatables.net-bs4) \
+			echo "  -> [CASE: datatables.net-bs4] Matched!"; \
+			DATATABLES_DIR=$(STATIC_DIR)/datatables; \
+			mkdir -p $$DATATABLES_DIR/js $$DATATABLES_DIR/css $$DATATABLES_DIR/images; \
+			if [ -d "$$SRC_DIR/js" ]; then \
+				cp $$SRC_DIR/js/*.js $$DATATABLES_DIR/js/ 2>/dev/null || true; \
+			fi; \
+			if [ -d "$$SRC_DIR/css" ]; then \
+				cp $$SRC_DIR/css/*.css $$DATATABLES_DIR/css/ 2>/dev/null || true; \
+			fi; \
+			if [ -d "$$SRC_DIR/images" ]; then \
+				cp $$SRC_DIR/images/* $$DATATABLES_DIR/images/ 2>/dev/null || true; \
+			fi; \
+			rm -rf $$DEST_DIR; \
+			;; \
+		datatables.net-buttons) \
+			echo "  -> [CASE: datatables.net-buttons] Matched!"; \
+			DATATABLES_DIR=$(STATIC_DIR)/datatables; \
+			mkdir -p $$DATATABLES_DIR/js; \
+			if [ -d "$$SRC_DIR/js" ]; then \
+				cp $$SRC_DIR/js/*.js $$DATATABLES_DIR/js/ 2>/dev/null || true; \
+			fi; \
+			rm -rf $$DEST_DIR; \
+			;; \
+		datatables.net-buttons-bs4) \
+			echo "  -> [CASE: datatables.net-buttons-bs4] Matched!"; \
+			DATATABLES_DIR=$(STATIC_DIR)/datatables; \
+			mkdir -p $DATATABLES_DIR/js $DATATABLES_DIR/css; \
+			if [ -d "$SRC_DIR/js" ]; then \
+				cp $SRC_DIR/js/*.js $DATATABLES_DIR/js/ 2>/dev/null || true; \
+			fi; \
+			if [ -d "$SRC_DIR/css" ]; then \
+				cp $SRC_DIR/css/*.css $DATATABLES_DIR/css/ 2>/dev/null || true; \
+			fi; \
+			rm -rf $DEST_DIR; \
+			;; \
+		metismenu) \
+			echo "  -> [CASE: metismenu] Matched!"; \
+			rm -rf $DEST_DIR; \
+			mkdir -p $DEST_DIR; \
+			if [ -d "$SRC_DIR/dist" ]; then \
+				cp -r $SRC_DIR/dist/* $DEST_DIR/; \
+			fi; \
+			;; \
+		jquery-easing) \
+			echo "  -> [CASE: jquery-easing] Matched!"; \
+			rm -rf $DEST_DIR; \
+			mkdir -p $DEST_DIR; \
+			if [ -d "$SRC_DIR/dist" ]; then \
+				cp -r $SRC_DIR/dist/* $DEST_DIR/; \
+			fi; \
+			;; \
+		jquery-ui) \
+			echo "  -> [CASE: jquery-ui] Matched!"; \
+			rm -rf $DEST_DIR; \
+			mkdir -p $DEST_DIR; \
+			if [ -d "$SRC_DIR/dist" ]; then \
+				cp -r $SRC_DIR/dist/* $DEST_DIR/; \
+			fi; \
+			;; \
+		*) \
+			echo "  -> [CASE: default] for $$VENDOR_NAME"; \
+			rm -rf $$DEST_DIR; \
+			mkdir -p $$DEST_DIR; \
+			if [ -d "$$SRC_DIR/dist" ]; then \
+				echo "  -> Copying 'dist' folder..."; \
+				cp -r $$SRC_DIR/dist $$DEST_DIR/; \
+			elif [ -d "$$SRC_DIR/umd" ]; then \
+				echo "  -> Copying 'umd' folder..."; \
+				cp -r $$SRC_DIR/umd $$DEST_DIR/; \
+			elif ls $$SRC_DIR/*.min.js >/dev/null 2>&1; then \
+				echo "  -> Copying root-level files (*.min.js only)..."; \
+				cp $$SRC_DIR/*.min.js $$DEST_DIR/; \
+			else \
+				echo "  -> WARNING: No standard dist folder found."; \
+				find $SRC_DIR -maxdepth 1 -type f \( -name "*.js" -o -name "*.css" -o -name "*.map" \) -exec cp {} $DEST_DIR/ \; 2>/dev/null || true; \
+			fi \
+			;; \
+	esac
+
+$(STATIC_DIR)/%:
 	@echo "Processing vendor: $*"; \
 	\
 	# Define source and destination paths \
@@ -159,10 +271,25 @@ $(STATIC_DIR)/%:
 	elif [ -d "node_modules/$$VENDOR_NAME/umd" ]; then \
 		echo "  -> Copying 'umd' folder contents..."; \
 		cp -r node_modules/$$VENDOR_NAME/umd/* $$DEST_DIR/; \
-	elif [ -f "node_modules/$$VENDOR_NAME/jquery.min.js" ]; then \
-		# Specific case for libraries like jquery that put files at root \
-		echo "  -> Copying root-level files (jquery.min.js only)..."; \
-		cp node_modules/$$VENDOR_NAME/jquery.min.js $$DEST_DIR/; \
+	elif ls node_modules/$$VENDOR_NAME/*.min.js >/dev/null 2>&1; then \
+		echo "  -> Copying root-level files (*.min.js only)..."; \
+		cp node_modules/$$VENDOR_NAME/*.min.js $$DEST_DIR/; \
+	elif [ -d "node_modules/$$VENDOR_NAME/js" ]; then \
+		echo "  -> Copying js/* files ..."; \
+		cp -r node_modules/$$VENDOR_NAME/js/* $$DEST_DIR/; \
+		if [ -d "node_modules/$$VENDOR_NAME/css" ]; then \
+			echo "  -> Copying css/* files ..."; \
+			cp -r node_modules/$$VENDOR_NAME/css/* $$DEST_DIR/; \
+		else \
+			echo "  -> No css directory found. Skipping CSS."; \
+		fi; \
+	elif [ "$$VENDOR_NAME" = "bootstrap-social" ]; then \
+		echo "  -> Copying bootstrap-social.css ..."; \
+		cp node_modules/bootstrap-social/bootstrap-social.css $$DEST_DIR/; \
+		if [ -d "node_modules/bootstrap-social/assets" ]; then \
+			echo "  -> Copying assets/ ..."; \
+			cp -r node_modules/bootstrap-social/assets $$DEST_DIR/; \
+		fi; \
 	else \
 		# Fallback to copy the entire top-level module (use with caution) \
 		echo "  -> WARNING: No standard assets found. Copying entire module..."; \
