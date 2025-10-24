@@ -45,7 +45,6 @@ node_modules/
 
 # Yarn state files
 .pnp.*
-.yarnrc.yml
 
 # === Log / lock / cache ===
 yarn-error.log
