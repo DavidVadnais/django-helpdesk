@@ -256,43 +256,4 @@ $(STATIC_DIR)/%:
 			;; \
 	esac
 
-$(STATIC_DIR)/%:
-	@echo "Processing vendor: $*"; \
-	\
-	# Define source and destination paths \
-	VENDOR_NAME=$*; \
-	DEST_DIR=$(STATIC_DIR)/$$VENDOR_NAME; \
-	\
-	# Use logic to find the appropriate files (dist, umd, or root) \
-	mkdir -p $$DEST_DIR; \
-	if [ -d "node_modules/$$VENDOR_NAME/dist" ]; then \
-		echo "  -> Copying 'dist' folder contents..."; \
-		cp -r node_modules/$$VENDOR_NAME/dist/* $$DEST_DIR/; \
-	elif [ -d "node_modules/$$VENDOR_NAME/umd" ]; then \
-		echo "  -> Copying 'umd' folder contents..."; \
-		cp -r node_modules/$$VENDOR_NAME/umd/* $$DEST_DIR/; \
-	elif ls node_modules/$$VENDOR_NAME/*.min.js >/dev/null 2>&1; then \
-		echo "  -> Copying root-level files (*.min.js only)..."; \
-		cp node_modules/$$VENDOR_NAME/*.min.js $$DEST_DIR/; \
-	elif [ -d "node_modules/$$VENDOR_NAME/js" ]; then \
-		echo "  -> Copying js/* files ..."; \
-		cp -r node_modules/$$VENDOR_NAME/js/* $$DEST_DIR/; \
-		if [ -d "node_modules/$$VENDOR_NAME/css" ]; then \
-			echo "  -> Copying css/* files ..."; \
-			cp -r node_modules/$$VENDOR_NAME/css/* $$DEST_DIR/; \
-		else \
-			echo "  -> No css directory found. Skipping CSS."; \
-		fi; \
-	elif [ "$$VENDOR_NAME" = "bootstrap-social" ]; then \
-		echo "  -> Copying bootstrap-social.css ..."; \
-		cp node_modules/bootstrap-social/bootstrap-social.css $$DEST_DIR/; \
-		if [ -d "node_modules/bootstrap-social/assets" ]; then \
-			echo "  -> Copying assets/ ..."; \
-			cp -r node_modules/bootstrap-social/assets $$DEST_DIR/; \
-		fi; \
-	else \
-		# Fallback to copy the entire top-level module (use with caution) \
-		echo "  -> WARNING: No standard assets found. Copying entire module..."; \
-		cp -r node_modules/$$VENDOR_NAME/* $$DEST_DIR/; \
-	fi
 
