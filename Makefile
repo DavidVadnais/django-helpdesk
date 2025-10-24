@@ -156,102 +156,60 @@ $(STATIC_DIR)/%:
 		exit 1; \
 	fi; \
 	\
-	case "$$VENDOR_NAME" in \
-		datatables) \
-			echo "  -> [CASE: datatables] Copying DataTables media contents..."; \
-			rm -rf $$DEST_DIR; \
+	echo "  -> for $$VENDOR_NAME"; \
+	rm -rf $$DEST_DIR; \
+	mkdir -p $$DEST_DIR; \
+	if [ "$$VENDOR_NAME" = "datatables" ]; then \
+		if [ -d "$$SRC_DIR/media" ]; then \
+			cp -r $$SRC_DIR/media/* $$DEST_DIR/; \
+		fi; \
+	elif echo "$$VENDOR_NAME" | grep -q "datatables"; then \
+		echo "  -> [CASE: datatables] Matched! Copying JS/CSS..."; \
+		mkdir -p $$DATATABLES_DIR/js $$DATATABLES_DIR/css $$DATATABLES_DIR/images; \
+		if [ -d "$$SRC_DIR/js" ]; then \
+			cp $$SRC_DIR/js/*.js $$DATATABLES_DIR/js/ 2>/dev/null || true; \
+		fi; \
+		if [ -d "$$SRC_DIR/css" ]; then \
+			cp $$SRC_DIR/css/*.css $$DATATABLES_DIR/css/ 2>/dev/null || true; \
+		fi; \
+		if [ -d "$$SRC_DIR/images" ]; then \
+			cp $$SRC_DIR/images/* $$DATATABLES_DIR/images/ 2>/dev/null || true; \
+		fi; \
+		rm -rf $$DEST_DIR; \
+	elif [ -d "$$SRC_DIR/dist" ]; then \
+		echo "  -> Copying 'dist' folder..."; \
+		if [ "$$VENDOR_NAME" = "jquery-ui" ]; then \
+			echo "  -> Copying 'themes' folder..."; \
+			cp -r $$SRC_DIR/dist/themes/base/* $$DEST_DIR/; \
+		elif [ "$$VENDOR_NAME" = "metismenu" ]; then \
+			DEST_DIR=$(STATIC_DIR)/metisMenu; \
 			mkdir -p $$DEST_DIR; \
-			if [ -d "$$SRC_DIR/media" ]; then \
-				cp -r $$SRC_DIR/media/* $$DEST_DIR/; \
-			fi; \
-			;; \
-		datatables.net) \
-			echo "  -> [CASE: datatables.net] Matched!"; \
-			mkdir -p $$DATATABLES_DIR/js $$DATATABLES_DIR/css; \
-			if [ -d "$$SRC_DIR/js" ]; then \
-				cp $$SRC_DIR/js/*.js $$DATATABLES_DIR/js/ 2>/dev/null || true; \
-			fi; \
-			if [ -d "$$SRC_DIR/css" ]; then \
-				cp $$SRC_DIR/css/*.css $$DATATABLES_DIR/css/ 2>/dev/null || true; \
-			fi; \
-			rm -rf $$DEST_DIR; \
-			;; \
-		datatables.net-bs4) \
-			echo "  -> [CASE: datatables.net-bs4] Matched!"; \
-			mkdir -p $$DATATABLES_DIR/js $$DATATABLES_DIR/css $$DATATABLES_DIR/images; \
-			if [ -d "$$SRC_DIR/js" ]; then \
-				cp $$SRC_DIR/js/*.js $$DATATABLES_DIR/js/ 2>/dev/null || true; \
-			fi; \
-			if [ -d "$$SRC_DIR/css" ]; then \
-				cp $$SRC_DIR/css/*.css $$DATATABLES_DIR/css/ 2>/dev/null || true; \
-			fi; \
-			if [ -d "$$SRC_DIR/images" ]; then \
-				cp $$SRC_DIR/images/* $$DATATABLES_DIR/images/ 2>/dev/null || true; \
-			fi; \
-			rm -rf $$DEST_DIR; \
-			;; \
-		datatables.net-buttons) \
-			echo "  -> [CASE: datatables.net-buttons] Matched!"; \
-			mkdir -p $$DATATABLES_DIR/js; \
-			if [ -d "$$SRC_DIR/js" ]; then \
-				cp $$SRC_DIR/js/*.js $$DATATABLES_DIR/js/ 2>/dev/null || true; \
-			fi; \
-			rm -rf $$DEST_DIR; \
-			;; \
-		datatables.net-buttons-bs4) \
-			echo "  -> [CASE: datatables.net-buttons-bs4] Matched!"; \
-			mkdir -p $DATATABLES_DIR/js $DATATABLES_DIR/css; \
-			if [ -d "$SRC_DIR/js" ]; then \
-				cp $SRC_DIR/js/*.js $DATATABLES_DIR/js/ 2>/dev/null || true; \
-			fi; \
-			if [ -d "$SRC_DIR/css" ]; then \
-				cp $SRC_DIR/css/*.css $DATATABLES_DIR/css/ 2>/dev/null || true; \
-			fi; \
-			rm -rf $DEST_DIR; \
-			;; \
-		*) \
-			echo "  -> [CASE: default] for $$VENDOR_NAME"; \
-			rm -rf $$DEST_DIR; \
-			mkdir -p $$DEST_DIR; \
-			if [ "$$VENDOR_NAME" = "datatables.net-buttons-dt" ]; then \
-				echo "  -> [CASE: datatables.net-buttons-bs4] Matched!"; \
-				cp -r $$SRC_DIR/js/* $$DATATABLES_DIR/js/; \
-				cp -r $$SRC_DIR/css/* $$DATATABLES_DIR/css/; \
-			elif [ -d "$$SRC_DIR/dist" ]; then \
-				echo "  -> Copying 'dist' folder..."; \
-				if [ "$$VENDOR_NAME" = "jquery-ui" ]; then \
-					echo "  -> Copying 'themes' folder..."; \
-					cp -r $$SRC_DIR/dist/themes/base/* $$DEST_DIR/; \
-				elif [ "$$VENDOR_NAME" = "metismenu" ]; then \
-					DEST_DIR=$(STATIC_DIR)/metisMenu; \
-					mkdir -p $$DEST_DIR; \
-				fi; \
-				cp -r $$SRC_DIR/dist/* $$DEST_DIR/; \
-				if [ "$$VENDOR_NAME" = "jquery-easing" ]; then \
-					for f in $$DEST_DIR/*.js*; do \
-						mv "$$f" "$$(echo "$$f" | sed -E 's/\.([0-9]+\.[0-9]+)\.umd/.umd/; s/\.umd//')" ; \
-					done; \
-				fi; \
-			elif [ -d "$$SRC_DIR/umd" ]; then \
-				echo "  -> Copying 'umd' folder..."; \
-				cp -r $$SRC_DIR/umd $$DEST_DIR/; \
-			elif ls $$SRC_DIR/*.min.js >/dev/null 2>&1; then \
-				echo "  -> Copying root-level files (*.min.js only)..."; \
-				cp $$SRC_DIR/*.min.js $$DEST_DIR/; \
-			elif [ -d "$$SRC_DIR/js" ]; then \
-				echo "  -> Copying js/* and cs/* ..."; \
-				cp -r $$SRC_DIR/js $$DEST_DIR/; \
-				if [ -d "$$SRC_DIR/css" ]; then \
-					cp -r $$SRC_DIR/css $$DEST_DIR/; \
-				fi ;\
-				if [ -d "$$SRC_DIR/webfonts" ]; then \
-					cp -r $$SRC_DIR/webfonts $$DEST_DIR/; \
-				fi ;\
-			else \
-				echo "  -> WARNING: No standard dist folder found."; \
-				find $SRC_DIR -maxdepth 1 -type f \( -name "*.js" -o -name "*.css" -o -name "*.map" \) -exec cp {} $DEST_DIR/ \; 2>/dev/null || true; \
-			fi \
-			;; \
-	esac
+		fi; \
+		cp -r $$SRC_DIR/dist/* $$DEST_DIR/; \
+		if [ "$$VENDOR_NAME" = "jquery-easing" ]; then \
+			for f in $$DEST_DIR/*.js*; do \
+				mv "$$f" "$$(echo "$$f" | sed -E 's/\.([0-9]+\.[0-9]+)\.umd/.umd/; s/\.umd//')" ; \
+			done; \
+		fi; \
+	elif [ -d "$$SRC_DIR/umd" ]; then \
+		echo "  -> Copying 'umd' folder..."; \
+		cp -r $$SRC_DIR/umd $$DEST_DIR/; \
+	elif ls $$SRC_DIR/*.min.js >/dev/null 2>&1; then \
+		echo "  -> Copying root-level files (*.min.js only)..."; \
+		cp $$SRC_DIR/*.min.js $$DEST_DIR/; \
+	elif [ -d "$$SRC_DIR/js" ]; then \
+		echo "  -> Copying js/* and cs/* ..."; \
+		cp -r $$SRC_DIR/js $$DEST_DIR/; \
+		if [ -d "$$SRC_DIR/css" ]; then \
+			cp -r $$SRC_DIR/css $$DEST_DIR/; \
+		fi ;\
+		if [ -d "$$SRC_DIR/webfonts" ]; then \
+			cp -r $$SRC_DIR/webfonts $$DEST_DIR/; \
+		fi ;\
+	else \
+		echo "  -> WARNING: No standard dist folder found."; \
+		find $SRC_DIR -maxdepth 1 -type f \( -name "*.js" -o -name "*.css" -o -name "*.map" \) -exec cp {} $DEST_DIR/ \; 2>/dev/null || true; \
+	fi \
+
 
 
