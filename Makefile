@@ -144,6 +144,7 @@ setup-vendor-dirs:
 
 # A Pattern Rule for copying each vendor
 # This rule applies to every vendor listed in the VENDORS variable
+# TODO It would be worth experimenting with node -p "require.resolve('PACKAGE')"
 $(STATIC_DIR)/%:
 	@VENDOR_NAME=$*; \
 	DEST_DIR=$(STATIC_DIR)/$$VENDOR_NAME; \
