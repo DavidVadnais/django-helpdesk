@@ -148,6 +148,7 @@ $(STATIC_DIR)/%:
 	@VENDOR_NAME=$*; \
 	DEST_DIR=$(STATIC_DIR)/$$VENDOR_NAME; \
 	SRC_DIR=node_modules/$$VENDOR_NAME; \
+	DATATABLES_DIR=$(STATIC_DIR)/datatables; \
 	echo "Processing vendor: $$VENDOR_NAME"; \
 	\
 	if [ ! -d "$$SRC_DIR" ]; then \
@@ -166,7 +167,6 @@ $(STATIC_DIR)/%:
 			;; \
 		datatables.net) \
 			echo "  -> [CASE: datatables.net] Matched!"; \
-			DATATABLES_DIR=$(STATIC_DIR)/datatables; \
 			mkdir -p $$DATATABLES_DIR/js $$DATATABLES_DIR/css; \
 			if [ -d "$$SRC_DIR/js" ]; then \
 				cp $$SRC_DIR/js/*.js $$DATATABLES_DIR/js/ 2>/dev/null || true; \
@@ -178,7 +178,6 @@ $(STATIC_DIR)/%:
 			;; \
 		datatables.net-bs4) \
 			echo "  -> [CASE: datatables.net-bs4] Matched!"; \
-			DATATABLES_DIR=$(STATIC_DIR)/datatables; \
 			mkdir -p $$DATATABLES_DIR/js $$DATATABLES_DIR/css $$DATATABLES_DIR/images; \
 			if [ -d "$$SRC_DIR/js" ]; then \
 				cp $$SRC_DIR/js/*.js $$DATATABLES_DIR/js/ 2>/dev/null || true; \
@@ -193,7 +192,6 @@ $(STATIC_DIR)/%:
 			;; \
 		datatables.net-buttons) \
 			echo "  -> [CASE: datatables.net-buttons] Matched!"; \
-			DATATABLES_DIR=$(STATIC_DIR)/datatables; \
 			mkdir -p $$DATATABLES_DIR/js; \
 			if [ -d "$$SRC_DIR/js" ]; then \
 				cp $$SRC_DIR/js/*.js $$DATATABLES_DIR/js/ 2>/dev/null || true; \
@@ -202,7 +200,6 @@ $(STATIC_DIR)/%:
 			;; \
 		datatables.net-buttons-bs4) \
 			echo "  -> [CASE: datatables.net-buttons-bs4] Matched!"; \
-			DATATABLES_DIR=$(STATIC_DIR)/datatables; \
 			mkdir -p $DATATABLES_DIR/js $DATATABLES_DIR/css; \
 			if [ -d "$SRC_DIR/js" ]; then \
 				cp $SRC_DIR/js/*.js $DATATABLES_DIR/js/ 2>/dev/null || true; \
@@ -212,37 +209,29 @@ $(STATIC_DIR)/%:
 			fi; \
 			rm -rf $DEST_DIR; \
 			;; \
-		metismenu) \
-			echo "  -> [CASE: metismenu] Matched!"; \
-			rm -rf $DEST_DIR; \
-			mkdir -p $DEST_DIR; \
-			if [ -d "$SRC_DIR/dist" ]; then \
-				cp -r $SRC_DIR/dist/* $DEST_DIR/; \
-			fi; \
-			;; \
-		jquery-easing) \
-			echo "  -> [CASE: jquery-easing] Matched!"; \
-			rm -rf $DEST_DIR; \
-			mkdir -p $DEST_DIR; \
-			if [ -d "$SRC_DIR/dist" ]; then \
-				cp -r $SRC_DIR/dist/* $DEST_DIR/; \
-			fi; \
-			;; \
-		jquery-ui) \
-			echo "  -> [CASE: jquery-ui] Matched!"; \
-			rm -rf $DEST_DIR; \
-			mkdir -p $DEST_DIR; \
-			if [ -d "$SRC_DIR/dist" ]; then \
-				cp -r $SRC_DIR/dist/* $DEST_DIR/; \
-			fi; \
-			;; \
 		*) \
 			echo "  -> [CASE: default] for $$VENDOR_NAME"; \
 			rm -rf $$DEST_DIR; \
 			mkdir -p $$DEST_DIR; \
-			if [ -d "$$SRC_DIR/dist" ]; then \
+			if [ "$$VENDOR_NAME" = "datatables.net-buttons-dt" ]; then \
+				echo "  -> [CASE: datatables.net-buttons-bs4] Matched!"; \
+				cp -r $$SRC_DIR/js/* $$DATATABLES_DIR/js/; \
+				cp -r $$SRC_DIR/css/* $$DATATABLES_DIR/css/; \
+			elif [ -d "$$SRC_DIR/dist" ]; then \
 				echo "  -> Copying 'dist' folder..."; \
-				cp -r $$SRC_DIR/dist $$DEST_DIR/; \
+				if [ "$$VENDOR_NAME" = "jquery-ui" ]; then \
+					echo "  -> Copying 'themes' folder..."; \
+					cp -r $$SRC_DIR/dist/themes/base/* $$DEST_DIR/; \
+				elif [ "$$VENDOR_NAME" = "metismenu" ]; then \
+					DEST_DIR=$(STATIC_DIR)/metisMenu; \
+					mkdir -p $$DEST_DIR; \
+				fi; \
+				cp -r $$SRC_DIR/dist/* $$DEST_DIR/; \
+				if [ "$$VENDOR_NAME" = "jquery-easing" ]; then \
+					for f in $$DEST_DIR/*.js*; do \
+						mv "$$f" "$$(echo "$$f" | sed -E 's/\.([0-9]+\.[0-9]+)\.umd/.umd/; s/\.umd//')" ; \
+					done; \
+				fi; \
 			elif [ -d "$$SRC_DIR/umd" ]; then \
 				echo "  -> Copying 'umd' folder..."; \
 				cp -r $$SRC_DIR/umd $$DEST_DIR/; \
