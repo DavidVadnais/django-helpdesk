@@ -39,7 +39,7 @@ To start up a demo project server, run this command:
 
 or with docker::
 
-    docker build . -t demodesk
+    docker build --file standalone/Dockerfile -t demodesk ..
     docker run --rm -v "$PWD:/app" -p 8080:8080 demodesk
 
 then pointing your web browser at http://localhost:8080 (log in as user
@@ -84,12 +84,12 @@ Follow these steps to set up your development environment to contribute to helpd
  - check out the helpdesk app to your local file system::
 
     git clone https://github.com/django-helpdesk/django-helpdesk.git
- 
+
  - Install the `uv` package manager::
     https://docs.astral.sh/uv/getting-started/installation/
 
  - install a virtual environment ::
-  
+
     uv venv
 
  - install the requirements for development::
@@ -97,16 +97,16 @@ Follow these steps to set up your development environment to contribute to helpd
     make develop
 
  - you can install optional dependencies using the --group option. The `make develop` script installs test dependencies.
-   
+
     # This installs pinax teams dependencies for production
     uv sync --all-extras --group teams
     # This installs pinax teams dependencies as well as test
     uv sync --all-extras --dev --group test --group teams
-    
+
 
 If you prefer working within an activated virtual environment instead of using the `uv` tool
 then you can use the normal command after the above step for creating the virtualenv to activate it::
-  
+
     source .venv/bin/activate
 
  - or depending on your shell it might be:
@@ -115,7 +115,7 @@ then you can use the normal command after the above step for creating the virtua
 The project enforces a standardized formatting in the CI/CD pipeline. To ensure you have the correct formatting run::
 
     make checkformat
-    
+
 To auto format any code use this::
 
     make format

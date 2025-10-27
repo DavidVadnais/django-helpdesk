@@ -11,6 +11,8 @@
     {% else %}
     <link title="timeline-styles" rel="stylesheet" href="{% static 'helpdesk/vendor/timeline3/css/timeline.css' %}">
     {% endif %}
+    <!-- add timeline -->
+    <script src="{% static 'helpdesk/vendor/datatables/js/jquery.dataTables.min.js' %}"></script>
 {% endblock %}
 
 {% block h1_title %}Tickets
@@ -348,11 +350,11 @@
         function get_url(row) {
             return "{% url 'helpdesk:view' 1234 %}".replace(/1234/, row.id.toString());
         }
-        
+
         function htmlEntities(str) {
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
-        
+
         $(document).ready(function () {
             // Ticket DataTable Initialization
 	    $.fn.dataTable.ext.errMode = function(settings, helpPage, message) {
@@ -445,7 +447,7 @@
                         data: "last_followup",
                         render: function (data, type, row) {
                             let locale = navigator.language || navigator.userLanguage || window.helpdesk_settings.LANGUAGE_CODE;
-                            
+
                             if (isNaN(Date.parse(data))) {
                                 return window.helpdesk_settings.NO_FOLLOWUP_TEXT;
                             }
