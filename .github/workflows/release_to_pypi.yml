@@ -25,10 +25,22 @@ jobs:
         with:
           python-version: "3.x"
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Install yarn dependencies
+        run: yarn install
+
+      - name: Build static assets
+        run: yarn build:static
+
       - name: Build source and wheel distributions
         run: |
           python -m pip install --upgrade build twine
           python -m build
           twine check --strict dist/*
+
       - name: Publish distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
