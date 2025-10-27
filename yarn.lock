@@ -32,13 +32,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart.js@npm:2.7.2":
-  version: 2.7.2
-  resolution: "chart.js@npm:2.7.2"
+"chart.js@npm:2.9.4":
+  version: 2.9.4
+  resolution: "chart.js@npm:2.9.4"
   dependencies:
     chartjs-color: "npm:^2.1.0"
     moment: "npm:^2.10.2"
-  checksum: 10c0/297b057a355d50126254d36741ef7dd92a989d07833317e9ba39dd5cc9e9c451759f4091d59ad6e197e4dfe81c3de0ae3101315da53b74969b616637ec98994e
+  checksum: 10c0/59bef7f0fdb3a52c66a4ba9821285d90db59b8c45bfc1be328e09e2d712cca8d6a804a64a25f0f67d979e81c11bb4be894ce99248f425724873fe5c3dff75cc7
   languageName: node
   linkType: hard
 
@@ -151,7 +151,7 @@ __metadata:
   dependencies:
     bootstrap: "npm:4.6.1"
     bootstrap-social: "npm:5.1.1"
-    chart.js: "npm:2.7.2"
+    chart.js: "npm:2.9.4"
     datatables.net: "npm:^1.10.25"
     datatables.net-bs4: "npm:^1.10.25"
     datatables.net-buttons: "npm:^1.7.1"
