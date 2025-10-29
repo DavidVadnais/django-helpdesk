@@ -5,16 +5,6 @@ __metadata:
   version: 8
   cacheKey: 10c0
 
-"bootstrap-social@npm:5.1.1":
-  version: 5.1.1
-  resolution: "bootstrap-social@npm:5.1.1"
-  dependencies:
-    bootstrap: "npm:~3"
-    font-awesome: "npm:~4.7"
-  checksum: 10c0/6898b211b1a0cc055c0784aef7c5cfd156959f91c7898eb5e0ae30dc94c153d1263663b266fee4c7f8868f897ed26bf9eb13174ae5df4fd8f687dccd12766bfd
-  languageName: node
-  linkType: hard
-
 "bootstrap@npm:4.6.1":
   version: 4.6.1
   resolution: "bootstrap@npm:4.6.1"
@@ -25,123 +15,64 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bootstrap@npm:~3":
-  version: 3.4.1
-  resolution: "bootstrap@npm:3.4.1"
-  checksum: 10c0/3ac443985a432fd77f1d6df2972d8f0a06e93bb0e10893fa890e6503e6d2b36e601f4a9894429223afa867c2232ead1af5c55ded4c23a64dc706ca25e49dc2da
-  languageName: node
-  linkType: hard
-
-"chart.js@npm:2.9.4":
-  version: 2.9.4
-  resolution: "chart.js@npm:2.9.4"
+"datatables.net-bs4@npm:^2, datatables.net-bs4@npm:^2.3.4":
+  version: 2.3.4
+  resolution: "datatables.net-bs4@npm:2.3.4"
   dependencies:
-    chartjs-color: "npm:^2.1.0"
-    moment: "npm:^2.10.2"
-  checksum: 10c0/59bef7f0fdb3a52c66a4ba9821285d90db59b8c45bfc1be328e09e2d712cca8d6a804a64a25f0f67d979e81c11bb4be894ce99248f425724873fe5c3dff75cc7
-  languageName: node
-  linkType: hard
-
-"chartjs-color-string@npm:^0.6.0":
-  version: 0.6.0
-  resolution: "chartjs-color-string@npm:0.6.0"
-  dependencies:
-    color-name: "npm:^1.0.0"
-  checksum: 10c0/09097db49b7de080e49593e1e9234101fb38574dfeb1e014d0bc0fcbeb306ae6d20f81eadc75e1eb3ba5242440a3a4bc7a0660f98b0900544d53a9a3c2c90351
-  languageName: node
-  linkType: hard
-
-"chartjs-color@npm:^2.1.0":
-  version: 2.4.1
-  resolution: "chartjs-color@npm:2.4.1"
-  dependencies:
-    chartjs-color-string: "npm:^0.6.0"
-    color-convert: "npm:^1.9.3"
-  checksum: 10c0/a36a6d5975b592464aba3e9dcee342b2de77f110c88b1a75a791df24211bcaf782be3d61896a79a5ac55f5d3c8a26b7f6986db9bd8d340826bc759ecc43505bd
-  languageName: node
-  linkType: hard
-
-"color-convert@npm:^1.9.3":
-  version: 1.9.3
-  resolution: "color-convert@npm:1.9.3"
-  dependencies:
-    color-name: "npm:1.1.3"
-  checksum: 10c0/5ad3c534949a8c68fca8fbc6f09068f435f0ad290ab8b2f76841b9e6af7e0bb57b98cb05b0e19fe33f5d91e5a8611ad457e5f69e0a484caad1f7487fd0e8253c
-  languageName: node
-  linkType: hard
-
-"color-name@npm:1.1.3":
-  version: 1.1.3
-  resolution: "color-name@npm:1.1.3"
-  checksum: 10c0/566a3d42cca25b9b3cd5528cd7754b8e89c0eb646b7f214e8e2eaddb69994ac5f0557d9c175eb5d8f0ad73531140d9c47525085ee752a91a2ab15ab459caf6d6
-  languageName: node
-  linkType: hard
-
-"color-name@npm:^1.0.0":
-  version: 1.1.4
-  resolution: "color-name@npm:1.1.4"
-  checksum: 10c0/a1a3f914156960902f46f7f56bc62effc6c94e84b2cae157a526b1c1f74b677a47ec602bf68a61abfa2b42d15b7c5651c6dbe72a43af720bc588dff885b10f95
-  languageName: node
-  linkType: hard
-
-"datatables.net-bs4@npm:^1.10.15, datatables.net-bs4@npm:^1.10.25":
-  version: 1.13.11
-  resolution: "datatables.net-bs4@npm:1.13.11"
-  dependencies:
-    datatables.net: "npm:1.13.11"
-    jquery: "npm:1.8 - 4"
-  checksum: 10c0/68f60f6208b2677ff622def4703b5feac20d926e0ba70e368c5dbf8975e5807ccc5ce18ebd9653346cabafdeb25102b3dd34a865b54c713941c17cf3c70863de
-  languageName: node
-  linkType: hard
-
-"datatables.net-buttons-bs4@npm:^1.7.1":
-  version: 1.7.1
-  resolution: "datatables.net-buttons-bs4@npm:1.7.1"
-  dependencies:
-    datatables.net-bs4: "npm:^1.10.15"
-    datatables.net-buttons: "npm:1.7.1"
+    datatables.net: "npm:2.3.4"
     jquery: "npm:>=1.7"
-  checksum: 10c0/97e8d66ff551fc082a5dbd4a50de2ddc0d6ebd48f8a88f75510025de20283f75f0b0d09aa6a41bfa206f02cd317d3884f37c0acee5edce26c7f87dcc02a86260
+  checksum: 10c0/b4b7027c932ee1e38aabf40cbb98c27fc44024f75582f063538068b7a56a9620753ec4ab26927b9e2c46cfa6fe02308a9cd8658426e27f41cd675846cbc91811
   languageName: node
   linkType: hard
 
-"datatables.net-buttons-dt@npm:^1.7.1":
-  version: 1.7.1
-  resolution: "datatables.net-buttons-dt@npm:1.7.1"
+"datatables.net-buttons-bs4@npm:^3.2.5":
+  version: 3.2.5
+  resolution: "datatables.net-buttons-bs4@npm:3.2.5"
   dependencies:
-    datatables.net-buttons: "npm:1.7.1"
-    datatables.net-dt: "npm:^1.10.15"
+    datatables.net-bs4: "npm:^2"
+    datatables.net-buttons: "npm:3.2.5"
     jquery: "npm:>=1.7"
-  checksum: 10c0/13ae595cb1bcaa3e4090f34a44b07ffd26273cc55c1d9e38cd12c3e1b28a480fe92a5b79ac02c500a37607b9ea6f76e20a86512284335415909fc08c318596f4
+  checksum: 10c0/d25a0c25d1181bb341460bf70ca1fc29a10c0b9e133adce18e963e399279879a86e9424f04a920cd3936f67e472941114573b9096235a95cf663476cca251296
   languageName: node
   linkType: hard
 
-"datatables.net-buttons@npm:1.7.1, datatables.net-buttons@npm:^1.7.1":
-  version: 1.7.1
-  resolution: "datatables.net-buttons@npm:1.7.1"
+"datatables.net-buttons-dt@npm:^3.2.5":
+  version: 3.2.5
+  resolution: "datatables.net-buttons-dt@npm:3.2.5"
   dependencies:
-    datatables.net: "npm:^1.10.15"
+    datatables.net-buttons: "npm:3.2.5"
+    datatables.net-dt: "npm:^2"
     jquery: "npm:>=1.7"
-  checksum: 10c0/f91c4549ae4efab43038fd6293bd14c8502790fea02197ab91cea6c1045cc46def7f5311c695173f62c2cbdc7ec73a5c94b3d4943c5c870376dd2df8f4d7f78c
+  checksum: 10c0/69a242d9a1bfb1ca6c25c79a8a52293146a54ea14010677cbc443d6b0f57791548ea418c16be7628e37d5f7ec609747ea6f9d5377ec0006e9a576feccce019d8
   languageName: node
   linkType: hard
 
-"datatables.net-dt@npm:^1.10.15":
-  version: 1.13.11
-  resolution: "datatables.net-dt@npm:1.13.11"
+"datatables.net-buttons@npm:3.2.5, datatables.net-buttons@npm:^3.2.5":
+  version: 3.2.5
+  resolution: "datatables.net-buttons@npm:3.2.5"
   dependencies:
-    datatables.net: "npm:1.13.11"
-    jquery: "npm:1.8 - 4"
-  checksum: 10c0/7c8181b7d2e84ce61ebca2877dbd9a4daf7df2fd5cf70feb01e4390c37b790ecc41ed4fce8d3547a2226e2a515a2083a3f2cd8848473d494682c4cd4218865f2
+    datatables.net: "npm:^2"
+    jquery: "npm:>=1.7"
+  checksum: 10c0/61090b1e9b11e2f7cacfdaa34e08e56b094e42ca0744d95d9e77042c23f1f853b8fb24e34ced0b8b8b3bf4d3f8511fa6992e0d199f3dd95d654f12f9214a3cf6
   languageName: node
   linkType: hard
 
-"datatables.net@npm:1.13.11, datatables.net@npm:^1.10.15, datatables.net@npm:^1.10.25":
-  version: 1.13.11
-  resolution: "datatables.net@npm:1.13.11"
+"datatables.net-dt@npm:^2":
+  version: 2.3.4
+  resolution: "datatables.net-dt@npm:2.3.4"
   dependencies:
-    jquery: "npm:1.8 - 4"
-  checksum: 10c0/943e3d64943dde2740880f5c193c75472e7877b4c2f197d6c0e5a99fdb148770542b1e3f66016ad596a14aaf5dab4202c4585e7a1aa8b9c4b7dd8782dbcfa0ac
+    datatables.net: "npm:2.3.4"
+    jquery: "npm:>=1.7"
+  checksum: 10c0/9a6b27894ad50fb404c3665c87410309690179254694968ae4b2016bd2b8fdf0b229a760eeeafbb3d763bc997adeeb3e9b102a1d5dfba4f5648814c418a9f929
+  languageName: node
+  linkType: hard
+
+"datatables.net@npm:2.3.4, datatables.net@npm:^2, datatables.net@npm:^2.3.4":
+  version: 2.3.4
+  resolution: "datatables.net@npm:2.3.4"
+  dependencies:
+    jquery: "npm:>=1.7"
+  checksum: 10c0/8683653cf1aacb50cc637c799f73bc91e477ccbf49ec99859e991034ba43c8e01b9c5a245fadcb0d10cbba9dca69989a5a36e886212fb4c62d53cd6e38081287
   languageName: node
   linkType: hard
 
@@ -150,16 +81,13 @@ __metadata:
   resolution: "django-helpdesk@workspace:."
   dependencies:
     bootstrap: "npm:4.6.1"
-    bootstrap-social: "npm:5.1.1"
-    chart.js: "npm:2.9.4"
-    datatables.net: "npm:^1.10.25"
-    datatables.net-bs4: "npm:^1.10.25"
-    datatables.net-buttons: "npm:^1.7.1"
-    datatables.net-buttons-bs4: "npm:^1.7.1"
-    datatables.net-buttons-dt: "npm:^1.7.1"
+    datatables.net: "npm:^2.3.4"
+    datatables.net-bs4: "npm:^2.3.4"
+    datatables.net-buttons: "npm:^3.2.5"
+    datatables.net-buttons-bs4: "npm:^3.2.5"
+    datatables.net-buttons-dt: "npm:^3.2.5"
     fontawesome-free: "npm:1.0.4"
     jquery: "npm:3.6.0"
-    jquery-easing: "npm:0.0.1"
     jquery-ui: "npm:1.14.1"
     metismenu: "npm:3.0.7"
     popper.js: "npm:1.16.1"
@@ -174,26 +102,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"font-awesome@npm:~4.7":
-  version: 4.7.0
-  resolution: "font-awesome@npm:4.7.0"
-  checksum: 10c0/1c456e2939c55192eed67db9c0efb8db3e92fd357ca189ca00030eb44acffa1e9f835288d2204c14b9a9c490a7b14b7090dfaff80ded6b2473f50a923dfb41e7
-  languageName: node
-  linkType: hard
-
 "fontawesome-free@npm:1.0.4":
   version: 1.0.4
   resolution: "fontawesome-free@npm:1.0.4"
   checksum: 10c0/7c1079153d913dd90f58d32e40791fa65d52cada8cf18ebc64e9b7aab2a6bc521733c2b81697927ad1c229ee9ac255ae23881276ff04dd1ac75f93496724aa9b
-  languageName: node
-  linkType: hard
-
-"jquery-easing@npm:0.0.1":
-  version: 0.0.1
-  resolution: "jquery-easing@npm:0.0.1"
-  dependencies:
-    jquery: "npm:*"
-  checksum: 10c0/e13369b22793802916d07a927bb29a2e40bcdbf66337cf915783e749adf2729a4cad804c8e0942b342f2c36f27fd404b43b2b35d76c662a88e20b15ee82c6783
   languageName: node
   linkType: hard
 
@@ -206,17 +118,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jquery@npm:*, jquery@npm:1.8 - 4, jquery@npm:>=1.12.0 <5.0.0, jquery@npm:>=1.7":
-  version: 3.7.1
-  resolution: "jquery@npm:3.7.1"
-  checksum: 10c0/808cfbfb758438560224bf26e17fcd5afc7419170230c810dd11f5c1792e2263e2970cca8d659eb84fcd9acc301edb6d310096e450277d54be4f57071b0c82d9
-  languageName: node
-  linkType: hard
-
 "jquery@npm:3.6.0":
   version: 3.6.0
   resolution: "jquery@npm:3.6.0"
   checksum: 10c0/45a63f8376a8918087c0277b2394dd382fcacff765c41ccbb5009a9336f8c971bf41c6a0519062edc1dff6333d96959c3a3ec55c95eb6c94d5372253d6cbf82f
+  languageName: node
+  linkType: hard
+
+"jquery@npm:>=1.12.0 <5.0.0, jquery@npm:>=1.7":
+  version: 3.7.1
+  resolution: "jquery@npm:3.7.1"
+  checksum: 10c0/808cfbfb758438560224bf26e17fcd5afc7419170230c810dd11f5c1792e2263e2970cca8d659eb84fcd9acc301edb6d310096e450277d54be4f57071b0c82d9
   languageName: node
   linkType: hard
 
@@ -226,13 +138,6 @@ __metadata:
   peerDependencies:
     jquery: ^3.4.1
   checksum: 10c0/5e31a2e117c8f9e4feabdfaee9dda2b5b2a75f71966bb5d2864575d17cc6c5e0e5b6354644346d8b1d31e9418609143c5d29fd5d5ead63135da881d3a5589f33
-  languageName: node
-  linkType: hard
-
-"moment@npm:^2.10.2":
-  version: 2.30.1
-  resolution: "moment@npm:2.30.1"
-  checksum: 10c0/865e4279418c6de666fca7786607705fd0189d8a7b7624e2e56be99290ac846f90878a6f602e34b4e0455c549b85385b1baf9966845962b313699e7cb847543a
   languageName: node
   linkType: hard
 
