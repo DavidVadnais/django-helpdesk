@@ -22,7 +22,17 @@ or online at http://django-helpdesk.readthedocs.org/.
 
 Demo Quickstart
 ---------------
+Requirements
+~~~~~~~~~~~~
 
+Before you get started, make sure you have the following installed:
+
+- ``jq`` – Command-line JSON processor
+- ``yarn`` – JavaScript package manager
+- ``npm`` – Node.js package manager
+
+Running DemoDesk
+~~~~~~~~~~~~
 `django-helpdesk` includes a basic demo Django project so that you may easily
 get started with testing or developing `django-helpdesk`. The demo project
 resides in the `demodesk/` top-level folder.
