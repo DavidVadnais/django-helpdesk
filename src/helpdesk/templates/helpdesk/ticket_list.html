@@ -11,8 +11,6 @@
     {% else %}
     <link title="timeline-styles" rel="stylesheet" href="{% static 'helpdesk/vendor/timeline3/css/timeline.css' %}">
     {% endif %}
-    <!-- add timeline -->
-    <script src="{% static 'helpdesk/vendor/datatables/js/jquery.dataTables.min.js' %}"></script>
 {% endblock %}
 
 {% block h1_title %}Tickets
@@ -373,7 +371,12 @@
                 createdRow: function (row, data, dataIndex) {
                     $(row).addClass(data.row_class);
                 },
-                dom: 'ltBp',
+                layout: {
+				    topStart: ['pageLength', 'buttons'],
+				    topEnd: 'search',
+				    bottomStart: 'paging',
+				    bottomEnd: 'info'
+				},
                 buttons: ["colvis"],
                 columns: [
                     {
