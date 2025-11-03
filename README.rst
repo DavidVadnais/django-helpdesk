@@ -22,17 +22,7 @@ or online at http://django-helpdesk.readthedocs.org/.
 
 Demo Quickstart
 ---------------
-Requirements
-~~~~~~~~~~~~
 
-Before you get started, make sure you have the following installed:
-
-- ``jq`` – Command-line JSON processor
-- ``yarn`` – JavaScript package manager
-- ``npm`` – Node.js package manager
-
-Running DemoDesk
-~~~~~~~~~~~~
 `django-helpdesk` includes a basic demo Django project so that you may easily
 get started with testing or developing `django-helpdesk`. The demo project
 resides in the `demodesk/` top-level folder.
@@ -86,6 +76,19 @@ Installation
 
 Developer Environment
 ---------------------
+
+Front-end Dependencies
+~~~~~~~~~~~~
+Before you get started, make sure you have the following installed:
+
+- ``jq`` – `Command-line JSON processor <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_
+- ``yarn`` – `JavaScript package manager <https://classic.yarnpkg.com/en/>`_
+- ``npm`` – `Node.js package manager <https://www.npmjs.com/package/npm>`_
+
+
+Build Dependencies
+~~~~~~~~~~~~
+
 The project uses the modern `uv` package manager: https://docs.astral.sh/uv/
 There are a number of options that make life a lot easier in the Makefile.
 To see option for the Makefile run: `make`
