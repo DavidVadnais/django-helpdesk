@@ -76,6 +76,19 @@ Installation
 
 Developer Environment
 ---------------------
+
+Front-end Dependencies
+~~~~~~~~~~~~
+Before you get started, make sure you have the following installed:
+
+- ``jq`` – `Command-line JSON processor <https://jqlang.org/download/>`_
+- ``yarn`` – `JavaScript package manager <https://classic.yarnpkg.com/en/>`_
+- ``npm`` – `Node.js package manager <https://www.npmjs.com/package/npm>`_
+
+
+Build Dependencies
+~~~~~~~~~~~~
+
 The project uses the modern `uv` package manager: https://docs.astral.sh/uv/
 There are a number of options that make life a lot easier in the Makefile.
 To see option for the Makefile run: `make`
