@@ -81,7 +81,7 @@ Front-end Dependencies
 ~~~~~~~~~~~~
 Before you get started, make sure you have the following installed:
 
-- ``jq`` – `Command-line JSON processor <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_
+- ``jq`` – `Command-line JSON processor <https://jqlang.org/download/>`_
 - ``yarn`` – `JavaScript package manager <https://classic.yarnpkg.com/en/>`_
 - ``npm`` – `Node.js package manager <https://www.npmjs.com/package/npm>`_
 
