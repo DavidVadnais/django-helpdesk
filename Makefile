@@ -10,6 +10,10 @@ PIP = pip3
 TOX = tox
 
 
+REQUIRED_BINS := node
+$(foreach bin,$(REQUIRED_BINS),\
+    $(if $(shell command -v $(bin) 2> /dev/null),,$(error Please install: `$(bin)`)))
+
 #: help - Display callable targets.
 .PHONY: help
 help:
@@ -132,7 +136,8 @@ STATIC_DIR := src/helpdesk/static/helpdesk/vendor
 
 # Use jq to read the top-level 'dependencies' keys from package.json
 # The tr command converts newlines to spaces for Make.
-VENDORS := $(shell jq -r '.dependencies | keys[]' package.json 2>/dev/null | tr '\n' ' ')
+
+VENDORS := $(shell node get_deps.js | tr '\n[],' ' ')
 
 .PHONY: static-vendor setup-vendor-dirs
 static-vendor: setup-vendor-dirs $(addprefix $(STATIC_DIR)/,$(VENDORS))
