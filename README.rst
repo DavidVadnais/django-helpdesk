@@ -81,7 +81,7 @@ Front-end Dependencies
 ~~~~~~~~~~~~
 Before you get started, make sure you have the following installed:
 
-- ``jq`` – `Command-line JSON processor <https://jqlang.org/download/>`_
+- ``node`` – `Command-line JSON processor <https://docs.npmjs.com/downloading-and-installing-node-js-and-npm>`_
 - ``yarn`` – `JavaScript package manager <https://classic.yarnpkg.com/en/>`_
 - ``npm`` – `Node.js package manager <https://www.npmjs.com/package/npm>`_
 
