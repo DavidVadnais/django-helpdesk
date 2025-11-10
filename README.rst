@@ -78,7 +78,7 @@ Developer Environment
 ---------------------
 
 Front-end Dependencies
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 Before you get started, make sure you have the following installed:
 
 - ``node`` – `Command-line JSON processor <https://docs.npmjs.com/downloading-and-installing-node-js-and-npm>`_
@@ -87,7 +87,7 @@ Before you get started, make sure you have the following installed:
 
 
 Build Dependencies
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 The project uses the modern `uv` package manager: https://docs.astral.sh/uv/
 There are a number of options that make life a lot easier in the Makefile.
