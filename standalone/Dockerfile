@@ -6,8 +6,9 @@ WORKDIR /app
 
 COPY django-helpdesk/ .
 
-# Enable Corepack and install deps
-RUN corepack enable && corepack prepare yarn@4.9.4 --activate
+# Enable Corepack to use the defined packageManager in package.json
+RUN corepack enable
+# Install dependencies
 RUN yarn install
 COPY . .
 RUN yarn build:static
