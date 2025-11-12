@@ -30,6 +30,9 @@ jobs:
         with:
           node-version: '24'
 
+      - name: Enable corepack
+        run: corepack enable
+
       - name: Install yarn dependencies
         run: yarn install
 
