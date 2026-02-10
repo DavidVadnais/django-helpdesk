@@ -299,7 +299,9 @@ def imap_oauth_sync(q, logger, server):
         # TODO: Perhaps store the authentication string template externally? Settings? Queue Table?
         server.authenticate(
             "XOAUTH2",
-            lambda x: f"user={q.email_box_user}\x01auth=Bearer {token['access_token']}\x01\x01".encode(),
+            lambda x: (
+                f"user={q.email_box_user}\x01auth=Bearer {token['access_token']}\x01\x01".encode()
+            ),
         )
         # Select the Inbound Mailbox folder
         server.select(q.email_box_imap_folder)

@@ -313,7 +313,7 @@ def followup_edit(request, ticket_id, followup_id):
     followup = get_object_or_404(FollowUp, id=followup_id)
     ticket = get_object_or_404(Ticket, id=ticket_id)
     ticket_perm_check(request, ticket)
-    
+
     if request.method == "GET":
         form = EditFollowUpForm(
             initial={
@@ -325,19 +325,23 @@ def followup_edit(request, ticket_id, followup_id):
                 "time_spent": format_time_spent(followup.time_spent),
             }
         )
-        
+
         # Modify the ticket field queryset to include current ticket + all open tickets
         if ticket.status not in Ticket.OPEN_STATUSES:
             # If current ticket is closed, add it to the queryset
-            form.fields['ticket'].queryset = Ticket.objects.filter(
-                Q(id=ticket.id) | Q(status__in=Ticket.OPEN_STATUSES)
-            ).distinct().order_by('-id')
+            form.fields["ticket"].queryset = (
+                Ticket.objects.filter(
+                    Q(id=ticket.id) | Q(status__in=Ticket.OPEN_STATUSES)
+                )
+                .distinct()
+                .order_by("-id")
+            )
         else:
             # If ticket is open, just show open tickets
-            form.fields['ticket'].queryset = Ticket.objects.filter(
+            form.fields["ticket"].queryset = Ticket.objects.filter(
                 status__in=Ticket.OPEN_STATUSES
-            ).order_by('-id')
-        
+            ).order_by("-id")
+
         ticketcc_string = return_ticketccstring_and_show_subscribe(
             request.user, ticket
         )[0]
@@ -353,14 +357,14 @@ def followup_edit(request, ticket_id, followup_id):
         )
     elif request.method == "POST":
         form = EditFollowUpForm(request.POST)
-        
+
         # Needed to allow editing of closed tickets followups
         original_ticket = get_object_or_404(Ticket, id=followup.ticket.id)
         if original_ticket.status not in Ticket.OPEN_STATUSES:
-            form.fields['ticket'].queryset = Ticket.objects.filter(
+            form.fields["ticket"].queryset = Ticket.objects.filter(
                 Q(id=original_ticket.id) | Q(status__in=Ticket.OPEN_STATUSES)
             ).distinct()
-        
+
         if form.is_valid():
             title = form.cleaned_data["title"]
             _ticket = form.cleaned_data["ticket"]
