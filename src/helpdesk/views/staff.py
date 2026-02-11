@@ -163,6 +163,7 @@ def dashboard(request):
     user_tickets_page = request.GET.get(_("ut_page"), 1)
     user_tickets_closed_resolved_page = request.GET.get(_("utcr_page"), 1)
     all_tickets_reported_by_current_user_page = request.GET.get(_("atrbcu_page"), 1)
+    unassigned_tickets_page = request.GET.get(_("una_page"), 1)
 
     huser = HelpdeskUser(request.user)
     active_tickets = Ticket.objects.select_related("queue").exclude(
@@ -259,6 +260,16 @@ def dashboard(request):
         all_tickets_reported_by_current_user = paginator.page(1)
     except EmptyPage:
         all_tickets_reported_by_current_user = paginator.page(paginator.num_pages)
+        
+    
+    # get unassigned tickets page
+    paginator = Paginator(unassigned_tickets, tickets_per_page)
+    try:
+        unassigned_tickets = paginator.page(unassigned_tickets_page)
+    except PageNotAnInteger:
+        unassigned_tickets = paginator.page(1)
+    except EmptyPage:
+        unassigned_tickets = paginator.page(paginator.num_pages)
 
     return render(
         request,

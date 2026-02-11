@@ -33,7 +33,8 @@
 {% trans "ut_page" as page_var %}
 {% include 'helpdesk/include/tickets.html' with ticket_list=user_tickets ticket_list_empty_message=no_assigned_tickets page_var=page_var %}
 
-{% include 'helpdesk/include/unassigned.html' %}
+{% trans "una_page" as page_var %}
+{% include 'helpdesk/include/unassigned.html' with page_var=page_var %}
 
 {% if user_tickets_closed_resolved %}
 {% trans "Closed & resolved Tickets you used to work on" as ticket_list_caption %}
