@@ -159,11 +159,17 @@ def dashboard(request):
     else:
         tickets_per_page = 25
 
-    # page vars for the three ticket tables
+    # page vars for the four ticket tables
     user_tickets_page = request.GET.get(_("ut_page"), 1)
     user_tickets_closed_resolved_page = request.GET.get(_("utcr_page"), 1)
     all_tickets_reported_by_current_user_page = request.GET.get(_("atrbcu_page"), 1)
     unassigned_tickets_page = request.GET.get(_("una_page"), 1)
+
+    # sorting parameters for each table
+    user_tickets_sort = request.GET.get('ut_sort', '-created')
+    user_tickets_closed_sort = request.GET.get('utcr_sort', '-created')
+    all_tickets_reported_sort = request.GET.get('atrbcu_sort', '-created')
+    unassigned_tickets_sort = request.GET.get('una_sort', '-created')
 
     huser = HelpdeskUser(request.user)
     active_tickets = Ticket.objects.select_related("queue").exclude(
@@ -177,7 +183,7 @@ def dashboard(request):
     # open & reopened tickets, assigned to current user
     tickets = active_tickets.filter(
         assigned_to=request.user,
-    )
+    ).order_by(user_tickets_sort)
 
     # closed & resolved tickets, assigned to current user
     tickets_closed_resolved = Ticket.objects.select_related("queue").filter(
@@ -187,13 +193,13 @@ def dashboard(request):
             Ticket.RESOLVED_STATUS,
             Ticket.DUPLICATE_STATUS,
         ],
-    )
+    ).order_by(user_tickets_closed_sort)
 
     user_queues = huser.get_queues()
 
     unassigned_tickets = active_tickets.filter(
         assigned_to__isnull=True, queue__in=user_queues
-    )
+    ).order_by(unassigned_tickets_sort)
     kbitems = None
     # Teams mode uses assignment via knowledge base items so exclude tickets assigned to KB items
     if helpdesk_settings.HELPDESK_TEAMS_MODE_ENABLED:
@@ -209,7 +215,7 @@ def dashboard(request):
             .filter(
                 submitter_email=email_current_user,
             )
-            .order_by("status")
+            .order_by(all_tickets_reported_sort)
         )
 
     tickets_in_queues = Ticket.objects.filter(
@@ -260,8 +266,7 @@ def dashboard(request):
         all_tickets_reported_by_current_user = paginator.page(1)
     except EmptyPage:
         all_tickets_reported_by_current_user = paginator.page(paginator.num_pages)
-        
-    
+
     # get unassigned tickets page
     paginator = Paginator(unassigned_tickets, tickets_per_page)
     try:
@@ -281,6 +286,10 @@ def dashboard(request):
             "kbitems": kbitems,
             "all_tickets_reported_by_current_user": all_tickets_reported_by_current_user,
             "basic_ticket_stats": basic_ticket_stats,
+            "user_tickets_sort": user_tickets_sort,
+            "user_tickets_closed_sort": user_tickets_closed_sort,
+            "all_tickets_reported_sort": all_tickets_reported_sort,
+            "unassigned_tickets_sort": unassigned_tickets_sort,
         },
     )
 
