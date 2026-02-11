@@ -166,10 +166,10 @@ def dashboard(request):
     unassigned_tickets_page = request.GET.get(_("una_page"), 1)
 
     # sorting parameters for each table
-    user_tickets_sort = request.GET.get('ut_sort', '-created')
-    user_tickets_closed_sort = request.GET.get('utcr_sort', '-created')
-    all_tickets_reported_sort = request.GET.get('atrbcu_sort', '-created')
-    unassigned_tickets_sort = request.GET.get('una_sort', '-created')
+    user_tickets_sort = request.GET.get("ut_sort", "-created")
+    user_tickets_closed_sort = request.GET.get("utcr_sort", "-created")
+    all_tickets_reported_sort = request.GET.get("atrbcu_sort", "-created")
+    unassigned_tickets_sort = request.GET.get("una_sort", "-created")
 
     huser = HelpdeskUser(request.user)
     active_tickets = Ticket.objects.select_related("queue").exclude(
@@ -186,14 +186,18 @@ def dashboard(request):
     ).order_by(user_tickets_sort)
 
     # closed & resolved tickets, assigned to current user
-    tickets_closed_resolved = Ticket.objects.select_related("queue").filter(
-        assigned_to=request.user,
-        status__in=[
-            Ticket.CLOSED_STATUS,
-            Ticket.RESOLVED_STATUS,
-            Ticket.DUPLICATE_STATUS,
-        ],
-    ).order_by(user_tickets_closed_sort)
+    tickets_closed_resolved = (
+        Ticket.objects.select_related("queue")
+        .filter(
+            assigned_to=request.user,
+            status__in=[
+                Ticket.CLOSED_STATUS,
+                Ticket.RESOLVED_STATUS,
+                Ticket.DUPLICATE_STATUS,
+            ],
+        )
+        .order_by(user_tickets_closed_sort)
+    )
 
     user_queues = huser.get_queues()
 
