@@ -68,24 +68,34 @@
                                     {% endfor %}
                                 {% endif %}
                             </p>
-                            <!--- ugly long test to suppress the following if it will be empty, to save vertical space -->
-                            {% with possible=helpdesk_settings.HELPDESK_SHOW_EDIT_BUTTON_FOLLOW_UP %}
-                                {% if  possible and followup.user and request.user == followup.user and not followup.ticketchange_set.all or  possible and user.is_superuser and helpdesk_settings.HELPDESK_SHOW_DELETE_BUTTON_SUPERUSER_FOLLOW_UP %}
+                            <!--- Show edit and delete buttons for follow-ups -->
+                            {% if helpdesk_settings.HELPDESK_SHOW_EDIT_BUTTON_FOLLOW_UP or helpdesk_settings.HELPDESK_SHOW_DELETE_BUTTON_SUPERUSER_FOLLOW_UP and user.is_superuser %}
                                 <small class="d-flex justify-content-end align-items-center gap-2">
-                                    {% if helpdesk_settings.HELPDESK_SHOW_EDIT_BUTTON_FOLLOW_UP %}
-                                        {% if followup.user and request.user == followup.user and not followup.ticketchange_set.all %}
-                                        <a href="{% url 'helpdesk:followup_edit' ticket.id followup.id %}" class='followup-edit'><button type="button" class="btn btn-warning btn-sm float-right"><i class="fas fa-edit"></i></button></a>
+                                    <!-- Edit button: show if setting enabled AND (user owns it OR user is superuser) -->
+                                    {% if helpdesk_settings.HELPDESK_SHOW_EDIT_BUTTON_FOLLOW_UP and followup.user %}
+                                        {% if request.user == followup.user or user.is_superuser %}
+                                            <a href="{% url 'helpdesk:followup_edit' ticket.id followup.id %}" class='followup-edit'>
+                                                <button type="button" class="btn btn-warning btn-sm">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </a>
+                                            {% if user.is_superuser and helpdesk_settings.HELPDESK_SHOW_DELETE_BUTTON_SUPERUSER_FOLLOW_UP %}
+                                                <span class="text-muted px-2">|</span>
+                                            {% endif %}
                                         {% endif %}
                                     {% endif %}
+                                    
+                                    <!-- Delete button: show if user is superuser AND setting enabled -->
                                     {% if user.is_superuser and helpdesk_settings.HELPDESK_SHOW_DELETE_BUTTON_SUPERUSER_FOLLOW_UP %}
-                                        <!-- if both edit and delete are present then put a spacer in -->
-                                        {% if helpdesk_settings.HELPDESK_SHOW_EDIT_BUTTON_FOLLOW_UP and followup.user and request.user == followup.user and not followup.ticketchange_set.all %}
-                                            <span class="text-muted px-2">|</span>
-                                        {% endif %}
-                                        <a href="{% url 'helpdesk:followup_delete' ticket.id followup.id %}" class='followup-edit'><button type="button" class="btn btn-warning btn-sm float-right"><i class="fas fa-trash"></i></button></a>
+                                        <a href="{% url 'helpdesk:followup_delete' ticket.id followup.id %}" class='followup-delete'>
+                                            <button type="button" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </a>
                                     {% endif %}
                                 </small>
-                            {% endif %}{% endwith %}
+                            {% endif %}
+                            
                         </div>
                         <!-- /.list-group-item -->
                     {% endfor %}
