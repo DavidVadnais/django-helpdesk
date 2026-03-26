@@ -1,7 +1,7 @@
 {% load i18n humanize %}
 {% load static %}
 {% load in_list %}
-<div class="form-row">
+<div class="row">
     <div class="col col-sm-3">
         <label for='id_statuses'>{% trans "Knowledge base item(s)" %}:</label>
     </div>
@@ -18,7 +18,7 @@
         </select>
     </div>
     <div class="col col-sm-6">
-        <button class="filterBuilderRemove btn btn-danger btn-sm float-right"><i class="fas fa-trash-alt"></i></button>
+        <button class="filterBuilderRemove btn btn-danger btn-sm float-end"><i class="fas fa-trash-alt"></i></button>
     </div>
-    <div class='form-row filterHelp'>{% trans "Ctrl-click to select multiple options" %}</div>
+    <div class='row filterHelp'>{% trans "Ctrl-click to select multiple options" %}</div>
 </div>

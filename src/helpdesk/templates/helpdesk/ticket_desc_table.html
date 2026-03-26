@@ -9,12 +9,12 @@
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-sm table-border">
-                <thead class="thead-light">
+                <thead class="table-secondary">
                     <tr class=''>
                         <th colspan='4'>
                             <h3>{{ ticket.queue.slug }}-{{ ticket.id }}. {{ ticket.title }}</h3>
                             {% blocktrans with ticket.queue as queue %}Queue: {{ queue }}{% endblocktrans %}
-                            <span class='ticket_toolbar float-right'>
+                            <span class='ticket_toolbar float-end'>
                                 <div class="btn-group" style="gap: 8px;">
                                     <a href="{% url 'helpdesk:edit' ticket.id %}" class="btn btn-warning btn-sm ticket-edit">
                                         <i class="fas fa-pencil-alt"></i> {% trans "Edit" %}
@@ -23,14 +23,14 @@
                                         <i class="fas fa-trash-alt"></i> {% trans "Delete" %}
                                     </a>
                                     | {% if ticket.on_hold %}
-                                        <form class="form-inline ticket-hold" method='post' action='unhold/'>
+                                        <form class="d-inline ticket-hold" method='post' action='unhold/'>
                                             {% csrf_token %}
                                             <button class="btn btn-warning btn-sm" type='submit'>
                                                 <i class="fas fa-play"></i> {% trans "Unhold" %}
                                             </button>
                                         </form>
                                     {% else %}
-                                        <form class="form-inline ticket-hold" method='post' action='hold/'>
+                                        <form class="d-inline ticket-hold" method='post' action='hold/'>
                                             {% csrf_token %}
                                             <button class="btn btn-warning btn-sm" type='submit'>
                                                 <i class="fas fa-pause"></i> {% trans "Hold" %}
@@ -100,18 +100,16 @@
                                             {% endfor %}
                                         </select>
 
-                                        <div class="input-group-append">
-                                            <button class="btn btn-primary btn-sm" type="submit" data-toggle="tooltip"
-                                                    title="{% trans 'Save ticket assignment' %}">
-                                                <i class="fas fa-user-check"></i>
-                                            </button>
-                                        </div>
+                                        <button class="btn btn-primary btn-sm" type="submit" data-bs-toggle="tooltip"
+                                                title="{% trans 'Save ticket assignment' %}">
+                                            <i class="fas fa-user-check"></i>
+                                        </button>
                                     </div>
 
                                     <span class="text-muted px-1">|</span>
 
                                     <!-- self assign hand -->
-                                    <a class="btn btn-primary btn-sm" data-toggle="tooltip" href="?take"
+                                    <a class="btn btn-primary btn-sm" data-bs-toggle="tooltip" href="?take"
                                     title="{% trans 'Assign this ticket to ' %}{{ request.user.email }}">
                                         <i class="fas fa-hand-paper"></i>
                                     </a>
@@ -123,14 +121,14 @@
                             {{ ticket.submitter_email }}
                             {% if user.is_superuser %}
                                 {% if submitter_userprofile_url %}
-                                    <a class="btn btn-primary btn-sm" data-toggle="tooltip" href='{{submitter_userprofile_url}}' title='{% trans "Edit " %}{{ ticket.submitter_email }}{% trans " user profile" %}'>
+                                    <a class="btn btn-primary btn-sm" data-bs-toggle="tooltip" href='{{submitter_userprofile_url}}' title='{% trans "Edit " %}{{ ticket.submitter_email }}{% trans " user profile" %}'>
                                         <i class="fas fa-address-book"></i>
                                     </a>
                                 {% endif %}
-                                <a class="btn btn-primary btn-sm" data-toggle="tooltip" href ="{% url 'helpdesk:list'%}?q={{ticket.submitter_email}}" title='{% trans "Display tickets filtered for " %}{{ ticket.submitter_email }}{% trans " as a keyword" %}'>
+                                <a class="btn btn-primary btn-sm" data-bs-toggle="tooltip" href ="{% url 'helpdesk:list'%}?q={{ticket.submitter_email}}" title='{% trans "Display tickets filtered for " %}{{ ticket.submitter_email }}{% trans " as a keyword" %}'>
                                     <i class="fas fa-search"></i>
                                 </a>
-                                <a class="btn btn-warning btn-sm float-right" data-toggle="tooltip" href='{% url 'helpdesk:email_ignore_add' %}?email={{ ticket.submitter_email }}' title='{% trans "Add email address for the ticket system to ignore." %}'>
+                                <a class="btn btn-warning btn-sm float-end" data-bs-toggle="tooltip" href='{% url 'helpdesk:email_ignore_add' %}?email={{ ticket.submitter_email }}' title='{% trans "Add email address for the ticket system to ignore." %}'>
                                     <i class="fas fa-eye-slash"></i>
                                 </a>
                             {% endif %}
@@ -145,16 +143,16 @@
                         <td>
                           {% if ticket.queue.enable_notifications_on_email_events %}
                             {{ ticketcc_string }}
-                            <a class="btn btn-warning btn-sm float-right" data-toggle='tooltip' href='{% url 'helpdesk:ticket_cc' ticket.id %}' title='{% trans "Click here to add / remove people who should receive an e-mail whenever this ticket is updated." %}'>
+                            <a class="btn btn-warning btn-sm float-end" data-bs-toggle='tooltip' href='{% url 'helpdesk:ticket_cc' ticket.id %}' title='{% trans "Click here to add / remove people who should receive an e-mail whenever this ticket is updated." %}'>
                                 <i class="fa fa-share"></i>
                             </a>
                             {% if SHOW_SUBSCRIBE %}
-                                <a class="btn btn-warning btn-sm float-right" data-toggle='tooltip' href='?subscribe' title='{% trans "Click here to subscribe yourself to this ticket, if you want to receive an e-mail whenever this ticket is updated." %}'>
+                                <a class="btn btn-warning btn-sm float-end" data-bs-toggle='tooltip' href='?subscribe' title='{% trans "Click here to subscribe yourself to this ticket, if you want to receive an e-mail whenever this ticket is updated." %}'>
                                     <i class="fas fa-rss-square"></i>
                                 </a>
                             {% endif %}
                           {% else %}
-                            <p class="btn btn-info btn-sm" data-toggle='tooltip' title='{% trans "Assigned queue does not have CC notifications enabled." %}'>{% trans "Disabled" %}</p>
+                            <p class="btn btn-info btn-sm" data-bs-toggle='tooltip' title='{% trans "Assigned queue does not have CC notifications enabled." %}'>{% trans "Disabled" %}</p>
                           {% endif %}
                         </td>
                     </tr>
@@ -174,16 +172,16 @@
 		    <tr>
 			<th class="table-active">
 			    {% trans "Resolves" %}
-			    <a data-toggle='tooltip' href='{% url 'helpdesk:ticket_resolves_add' ticket.id %}'
+			    <a data-bs-toggle='tooltip' href='{% url 'helpdesk:ticket_resolves_add' ticket.id %}'
 			       title='{% trans "Make this ticket resolve another ticket." %}'>
-				<button type="button" class="btn btn-primary btn-sm float-right"><i class="fas fa-link"></i></button></a>
+				<button type="button" class="btn btn-primary btn-sm float-end"><i class="fas fa-link"></i></button></a>
 			</th>
 			<td colspan="3" class="p-0">
 			    {% for resolves in ticket.depends_on.all %}
 			    {% if forloop.first %}<table class="table table-borderless table-responsive m-0">{% endif %}
 				<tr>
 				    <td>
-					<a data-toggle='tooltip' href='{% url 'helpdesk:ticket_resolves_del' resolves.ticket.id resolves.id %}'
+					<a data-bs-toggle='tooltip' href='{% url 'helpdesk:ticket_resolves_del' resolves.ticket.id resolves.id %}'
 					   title='{% trans "Drop the dependency on this ticket. A ticket may not be closed until all tickets it depends on are closed or removed." %}'>
 					    <button type="button" class="btn btn-warning btn-sm"><i class="fas fa-trash"></i></button></a>
 				    </td>
@@ -201,9 +199,9 @@
 		    <tr>
 			<th class="table-active">
 			    {% trans "Depends" %}
-			    <a data-toggle='tooltip' href='{% url 'helpdesk:ticket_dependency_add' ticket.id %}'
+			    <a data-bs-toggle='tooltip' href='{% url 'helpdesk:ticket_dependency_add' ticket.id %}'
 			       title='{% trans "Make this ticket dependent on another ticket. A ticket may not be closed until all tickets it depends on are closed or removed." %}'>
-				<button type="button" class="btn btn-primary btn-sm float-right"><i class="fas fa-link"></i></button></a>
+				<button type="button" class="btn btn-primary btn-sm float-end"><i class="fas fa-link"></i></button></a>
 
 			</th>
                         <td colspan="3" class="p-0">
@@ -211,7 +209,7 @@
 			    {% if forloop.first %}<table class="table table-borderless table-hover table-responsive m-0">{% endif %}
 				<tr>
 				    <td>
-					<a data-toggle='tooltip' href='{% url 'helpdesk:ticket_dependency_del' ticket.id dep.id %}'
+					<a data-bs-toggle='tooltip' href='{% url 'helpdesk:ticket_dependency_del' ticket.id dep.id %}'
 					   title='{% trans "Drop the dependency on this ticket. A ticket may not be closed until all tickets it depends on are closed or removed." %}'>
 					    <button type="button" class="btn btn-warning btn-sm"><i class="fas fa-trash"></i></button></a>
 				    </td>
@@ -266,13 +264,13 @@
                                             <div class="card mb-4">
                                                 <div class="card-header">
                                                     <h5>
-                                                        <span data-toggle="collapse" data-target="#checklist{{ checklist.id }}" onclick="$(this).siblings('button').children('i').toggleClass('fa-caret-down fa-caret-up')">
+                                                        <span data-bs-toggle="collapse" data-bs-target="#checklist{{ checklist.id }}" onclick="$(this).siblings('button').children('i').toggleClass('fa-caret-down fa-caret-up')">
                                                             {{ checklist }}
                                                         </span>
                                                         <a class="btn btn-link btn-sm" href="{% url 'helpdesk:edit_ticket_checklist' ticket.id checklist.id %}">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
-                                                        <button class="btn btn-secondary btn-sm float-right" data-toggle="collapse" data-target="#checklist{{ checklist.id }}" onclick="$(this).children('i').toggleClass('fa-caret-down fa-caret-up')">
+                                                        <button class="btn btn-secondary btn-sm float-end" data-bs-toggle="collapse" data-bs-target="#checklist{{ checklist.id }}" onclick="$(this).children('i').toggleClass('fa-caret-down fa-caret-up')">
                                                             <i class="fas fa-caret-down"></i>
                                                         </button>
                                                     </h5>
@@ -303,7 +301,7 @@
                                         </div>
                                     {% endfor %}
                                     <div class="col-sm-4 col-xs-12">
-                                        <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#createChecklistModal">
+                                        <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#createChecklistModal">
                                             <i class="fas fa-plus"></i>
                                             {% trans "Create new checklist" %}
                                         </button>
@@ -339,7 +337,7 @@
                 </tbody>
             </table>
             <a href='#FurtherEditOptions'>
-                <button type="button" class="btn btn-sm btn-warning float-right" onclick="$('#FurtherEditOptions').fadeIn()">
+                <button type="button" class="btn btn-sm btn-warning float-end" onclick="$('#FurtherEditOptions').fadeIn()">
                     <i class="fas fa-pencil-alt"></i>&nbsp;{% trans "Edit details" %}
                 </button>
             </a>

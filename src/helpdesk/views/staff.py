@@ -1706,7 +1706,7 @@ def run_report(request, report):
     update_summary_tables(report_queryset, report, summarytable, summarytable2)
     if report == "daysuntilticketclosedbymonth":
         for key in summarytable2.keys():
-            summarytable[key] = summarytable2[key] / summarytable[key]
+            summarytable[key] = round(summarytable2[key] / summarytable[key], 2)
 
     header1 = sorted(set(list(i for i, _ in summarytable.keys())))
 
@@ -1735,7 +1735,10 @@ def run_report(request, report):
     # Add total row to table
     total_data = ["Total"]
     for hdr in possible_options:
-        total_data.append(str(totals[hdr]))
+        val = totals[hdr]
+        if report == "daysuntilticketclosedbymonth":
+            val = round(val, 2)
+        total_data.append(str(val))
 
     return render(
         request,

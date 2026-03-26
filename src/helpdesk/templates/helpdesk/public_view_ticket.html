@@ -115,7 +115,7 @@
         {% if ticket.status == 1 %}
             <input type="hidden" name="new_status" value="{{ ticket.status }}" />
         {% else %}
-        <dd><div class="form-group">
+        <dd><div class="mb-3">
         {% for status_choice in ticket.get_allowed_status_flow %}
             <label for='st_{{ status_choice.1|lower }}' class='{% if ticket.status == status_choice.0 %}active {% endif %}radio-inline'><input type='radio' name='new_status' value='{{ status_choice.0 }}' id='st_{{ status_choice.1|lower }}'{% if not ticket.can_be_resolved %} disabled='disabled'{% endif %}{% if ticket.status == status_choice.0 %} checked='checked'{% endif %}>{{ status_choice.1 }}{% if forloop.last %}{% else %} &raquo;{% endif %}</label>
         {% endfor %}

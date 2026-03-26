@@ -133,7 +133,7 @@
 
                 <dt><label>{% trans "New Status" %}</label></dt>
                 {% if not ticket.can_be_resolved %}<dd>{% trans "This ticket cannot be resolved or closed until the tickets it depends on are resolved." %}</dd>{% endif %}
-                <dd><div class="form-group">
+                <dd><div class="mb-3">
                 {% for status_choice in ticket.get_allowed_status_flow %}
                     <label for='st_{{ status_choice.1|lower }}' class='{% if ticket.status == status_choice.0 %}active {% endif %}radio-inline'><input type='radio' name='new_status' value='{{ status_choice.0 }}' id='st_{{ status_choice.1|lower }}'{% if not ticket.can_be_resolved %} disabled='disabled'{% endif %}{% if ticket.status == status_choice.0 %} checked='checked'{% endif %}>{{ status_choice.1 }}{% if forloop.last %}{% else %} &raquo;{% endif %}</label>
                 {% endfor %}
@@ -254,7 +254,7 @@
 
         </fieldset>
 
-        <button class="btn btn-primary float-right" type='submit' onclick='$("#ShowFurtherEditOptions").click()'>{% trans "Update This Ticket" %}</button>
+        <button class="btn btn-primary float-end" type='submit' onclick='$("#ShowFurtherEditOptions").click()'>{% trans "Update This Ticket" %}</button>
 
         {% csrf_token %}</form>
 
@@ -268,9 +268,7 @@
                         {% csrf_token %}
                         <div class="modal-header">
                             <h5 class="modal-title">{% trans "Add a new checklist" %}</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="{% trans 'Close' %}">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
                         </div>
                         <div class="modal-body">
                             <p>{% trans "You can select a template to generate a checklist with a predefined set of tasks." %}</p>
@@ -330,7 +328,9 @@ $( function() {
           alert('{% trans 'If you want to update state of checklist tasks, please do a Follow-Up response and click on "Update checklists"' %}')
       })
 
-      $("[data-toggle=tooltip]").tooltip();
+      document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function(el) {
+          new bootstrap.Tooltip(el);
+      });
 
       {% if helpdesk_settings.HELPDESK_ENABLE_ATTACHMENTS %}
       $("#ShowFileUpload").click(function() {
