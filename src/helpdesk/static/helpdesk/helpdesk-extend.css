@@ -103,10 +103,13 @@ pre {
 
 table .tickettitle {
   max-width: 250px;
-  font-weight: bold;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+table .tickettitle a {
+  text-decoration: none;
 }
 
 .handle {

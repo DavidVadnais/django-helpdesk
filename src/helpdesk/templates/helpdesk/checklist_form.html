@@ -19,7 +19,7 @@
         <div class="card-header">
             <h2>
                 {% trans "Edit Checklist" %}
-                <a class="btn btn-danger float-right" href='{% url "helpdesk:delete_ticket_checklist" ticket.id checklist.id %}'>
+                <a class="btn btn-danger float-end" href='{% url "helpdesk:delete_ticket_checklist" ticket.id checklist.id %}'>
                     <i class="fas fa-trash"></i>
                     {% trans "Delete checklist" %}
                 </a>
@@ -34,7 +34,7 @@
             <form method='post'>
                 {% csrf_token %}
                 <div class="row">
-                    <div class="col-sm-6 col-xs-12 form-group">
+                    <div class="col-sm-6 col-xs-12 mb-3">
                         {{ form.name.label_tag }}
                         {{ form.name }}
                         {{ form.name.errors }}
@@ -45,7 +45,7 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        <th class="text-right">{% trans "Position" %}</th>
+                        <th class="text-end">{% trans "Position" %}</th>
                         <th>{% trans "Description" %}</th>
                         <th class="text-center">{% trans "Delete?" %}</th>
                     </tr>
@@ -60,7 +60,7 @@
                     <i class="fas fa-plus"></i>
                     {% trans "Add task" %}
                 </button>
-                <div class='buttons form-group text-center'>
+                <div class='buttons mb-3 text-center'>
                     <a class="btn btn-link" href='{{ ticket.get_absolute_url }}'>
                         <i class="fas fa-times"></i>
                         {% trans "Cancel Changes" %}

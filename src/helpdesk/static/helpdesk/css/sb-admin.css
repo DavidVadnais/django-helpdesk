@@ -130,6 +130,11 @@ body.fixed-nav.sidebar-toggled #content-wrapper {
   }
 }
 
+/* Navbar uses the BS4 bg-dark color (#343a40) to appear lighter than the sidebar (#212529) */
+nav.navbar.bg-dark {
+  background-color: #343a40 !important;
+}
+
 .sidebar {
   width: 90px !important;
   background-color: #212529;

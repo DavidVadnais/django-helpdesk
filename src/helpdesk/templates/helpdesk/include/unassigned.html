@@ -106,7 +106,7 @@
                 {% with 5 as thresh %}
                     {% for i in unassigned_tickets.paginator.page_range %}
                         {% if unassigned_tickets.number == i %}
-                            <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                            <li class="active"><span>{{ i }} <span class="visually-hidden">(current)</span></span></li>
                         {% elif i <= unassigned_tickets.number|add:5 and i >= unassigned_tickets.number|add:-5 %}
                             <li><a href="?{{ page_var }}={{ i }}{% if unassigned_tickets_sort %}&una_sort={{ unassigned_tickets_sort }}{% endif %}#unassigned-table">{{ i }}</a></li>
                         {% endif %}
