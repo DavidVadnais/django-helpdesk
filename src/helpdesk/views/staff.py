@@ -1006,7 +1006,7 @@ def redirect_from_chosen_ticket(
     return redirect(chosen_ticket)
 
 
-@staff_member_required
+@helpdesk_staff_member_required
 def merge_tickets(request):
     """
     An intermediate view to merge up to 3 tickets in one main ticket.
@@ -1018,6 +1018,11 @@ def merge_tickets(request):
     tickets = custom_fields = None
     if ticket_select_form.is_valid():
         tickets = ticket_select_form.cleaned_data.get("tickets")
+
+        huser = HelpdeskUser(request.user)
+        for t in tickets:
+            if not huser.can_access_queue(t.queue):
+                raise PermissionDenied()
 
         custom_fields = CustomField.objects.all()
 
@@ -1932,6 +1937,7 @@ ticket_cc_add = staff_member_required(ticket_cc_add)
 @helpdesk_staff_member_required
 def ticket_cc_del(request, ticket_id, cc_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
+    ticket_perm_check(request, ticket)
     cc = get_object_or_404(TicketCC, ticket__id=ticket_id, id=cc_id)
 
     if request.method == "POST":
@@ -1975,6 +1981,8 @@ ticket_dependency_add = staff_member_required(ticket_dependency_add)
 
 @helpdesk_staff_member_required
 def ticket_dependency_del(request, ticket_id, dependency_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    ticket_perm_check(request, ticket)
     dependency = get_object_or_404(
         TicketDependency, ticket__id=ticket_id, id=dependency_id
     )
@@ -2018,6 +2026,8 @@ ticket_resolves_add = staff_member_required(ticket_resolves_add)
 
 @helpdesk_staff_member_required
 def ticket_resolves_del(request, ticket_id, dependency_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    ticket_perm_check(request, ticket)
     dependency = get_object_or_404(
         TicketDependency, ticket__id=ticket_id, id=dependency_id
     )
@@ -2038,7 +2048,9 @@ def attachment_del(request, ticket_id, attachment_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
     ticket_perm_check(request, ticket)
 
-    attachment = get_object_or_404(FollowUpAttachment, id=attachment_id)
+    attachment = get_object_or_404(
+        FollowUpAttachment, id=attachment_id, followup__ticket=ticket
+    )
     if request.method == "POST":
         attachment.delete()
         return HttpResponseRedirect(reverse("helpdesk:view", args=[ticket_id]))
