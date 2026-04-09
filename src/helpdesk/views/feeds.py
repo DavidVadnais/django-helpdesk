@@ -9,11 +9,13 @@ views/feeds.py - A handful of staff-only RSS feeds to provide ticket details
 
 from django.contrib.auth import get_user_model
 from django.contrib.syndication.views import Feed
+from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from helpdesk.models import FollowUp, Queue, Ticket
+from helpdesk.user import HelpdeskUser
 
 
 User = get_user_model()
@@ -136,7 +138,10 @@ class OpenTicketsByQueue(Feed):
     description_template = "helpdesk/rss/ticket_description.html"
 
     def get_object(self, request, queue_slug):
-        return get_object_or_404(Queue, slug=queue_slug)
+        queue = get_object_or_404(Queue, slug=queue_slug)
+        if not HelpdeskUser(request.user).can_access_queue(queue):
+            raise PermissionDenied()
+        return queue
 
     def title(self, obj):
         return _("Helpdesk: Open Tickets in queue %(queue)s") % {
