@@ -15,19 +15,19 @@
                 {% if form.errors %}
                 <div class="alert alert-danger">{% trans "Your username and password didn't match. Please try again." %}</div>
                 {% endif %}
-            <div class="form-group">
+            <div class="mb-3">
               <div class="form-label-group">
                 <input type="text" id="username" name="username" class="form-control" placeholder="Username" required="required" autofocus="autofocus">
                 <label for="username">Username</label>
               </div>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
               <div class="form-label-group">
                 <input type="password" id="password" name="password" class="form-control" placeholder="Password" required="required">
                 <label for="password">Password</label>
               </div>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
               <div class="checkbox">
                 <label>
                   <input type="checkbox" value="remember-me">

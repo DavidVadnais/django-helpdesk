@@ -1,7 +1,7 @@
 """
 django-helpdesk - A Django powered ticket tracker for small enterprise.
 
-(c) Copyright 2008-2025 Jutda. All Rights Reserved. See LICENSE for details.
+(c) Copyright 2008-2026 Jutda. All Rights Reserved. See LICENSE for details.
 
 views/staff.py - The bulk of the application - provides most business logic and
                  renders all staff-facing views.
@@ -159,10 +159,17 @@ def dashboard(request):
     else:
         tickets_per_page = 25
 
-    # page vars for the three ticket tables
+    # page vars for the four ticket tables
     user_tickets_page = request.GET.get(_("ut_page"), 1)
     user_tickets_closed_resolved_page = request.GET.get(_("utcr_page"), 1)
     all_tickets_reported_by_current_user_page = request.GET.get(_("atrbcu_page"), 1)
+    unassigned_tickets_page = request.GET.get(_("una_page"), 1)
+
+    # sorting parameters for each table
+    user_tickets_sort = request.GET.get("ut_sort", "-created")
+    user_tickets_closed_sort = request.GET.get("utcr_sort", "-created")
+    all_tickets_reported_sort = request.GET.get("atrbcu_sort", "-created")
+    unassigned_tickets_sort = request.GET.get("una_sort", "-created")
 
     huser = HelpdeskUser(request.user)
     active_tickets = Ticket.objects.select_related("queue").exclude(
@@ -176,23 +183,27 @@ def dashboard(request):
     # open & reopened tickets, assigned to current user
     tickets = active_tickets.filter(
         assigned_to=request.user,
-    )
+    ).order_by(user_tickets_sort)
 
     # closed & resolved tickets, assigned to current user
-    tickets_closed_resolved = Ticket.objects.select_related("queue").filter(
-        assigned_to=request.user,
-        status__in=[
-            Ticket.CLOSED_STATUS,
-            Ticket.RESOLVED_STATUS,
-            Ticket.DUPLICATE_STATUS,
-        ],
+    tickets_closed_resolved = (
+        Ticket.objects.select_related("queue")
+        .filter(
+            assigned_to=request.user,
+            status__in=[
+                Ticket.CLOSED_STATUS,
+                Ticket.RESOLVED_STATUS,
+                Ticket.DUPLICATE_STATUS,
+            ],
+        )
+        .order_by(user_tickets_closed_sort)
     )
 
     user_queues = huser.get_queues()
 
     unassigned_tickets = active_tickets.filter(
         assigned_to__isnull=True, queue__in=user_queues
-    )
+    ).order_by(unassigned_tickets_sort)
     kbitems = None
     # Teams mode uses assignment via knowledge base items so exclude tickets assigned to KB items
     if helpdesk_settings.HELPDESK_TEAMS_MODE_ENABLED:
@@ -208,7 +219,7 @@ def dashboard(request):
             .filter(
                 submitter_email=email_current_user,
             )
-            .order_by("status")
+            .order_by(all_tickets_reported_sort)
         )
 
     tickets_in_queues = Ticket.objects.filter(
@@ -260,6 +271,15 @@ def dashboard(request):
     except EmptyPage:
         all_tickets_reported_by_current_user = paginator.page(paginator.num_pages)
 
+    # get unassigned tickets page
+    paginator = Paginator(unassigned_tickets, tickets_per_page)
+    try:
+        unassigned_tickets = paginator.page(unassigned_tickets_page)
+    except PageNotAnInteger:
+        unassigned_tickets = paginator.page(1)
+    except EmptyPage:
+        unassigned_tickets = paginator.page(paginator.num_pages)
+
     return render(
         request,
         "helpdesk/dashboard.html",
@@ -270,6 +290,10 @@ def dashboard(request):
             "kbitems": kbitems,
             "all_tickets_reported_by_current_user": all_tickets_reported_by_current_user,
             "basic_ticket_stats": basic_ticket_stats,
+            "user_tickets_sort": user_tickets_sort,
+            "user_tickets_closed_sort": user_tickets_closed_sort,
+            "all_tickets_reported_sort": all_tickets_reported_sort,
+            "unassigned_tickets_sort": unassigned_tickets_sort,
         },
     )
 
@@ -326,10 +350,25 @@ def followup_edit(request, ticket_id, followup_id):
             }
         )
 
+        # Modify the ticket field queryset to include current ticket + all open tickets
+        if ticket.status not in Ticket.OPEN_STATUSES:
+            # If current ticket is closed, add it to the queryset
+            form.fields["ticket"].queryset = (
+                Ticket.objects.filter(
+                    Q(id=ticket.id) | Q(status__in=Ticket.OPEN_STATUSES)
+                )
+                .distinct()
+                .order_by("-id")
+            )
+        else:
+            # If ticket is open, just show open tickets
+            form.fields["ticket"].queryset = Ticket.objects.filter(
+                status__in=Ticket.OPEN_STATUSES
+            ).order_by("-id")
+
         ticketcc_string = return_ticketccstring_and_show_subscribe(
             request.user, ticket
         )[0]
-
         return render(
             request,
             "helpdesk/followup_edit.html",
@@ -342,6 +381,14 @@ def followup_edit(request, ticket_id, followup_id):
         )
     elif request.method == "POST":
         form = EditFollowUpForm(request.POST)
+
+        # Needed to allow editing of closed tickets followups
+        original_ticket = get_object_or_404(Ticket, id=followup.ticket.id)
+        if original_ticket.status not in Ticket.OPEN_STATUSES:
+            form.fields["ticket"].queryset = Ticket.objects.filter(
+                Q(id=original_ticket.id) | Q(status__in=Ticket.OPEN_STATUSES)
+            ).distinct()
+
         if form.is_valid():
             title = form.cleaned_data["title"]
             _ticket = form.cleaned_data["ticket"]
@@ -371,7 +418,7 @@ def followup_edit(request, ticket_id, followup_id):
                 attachment.save()
             # delete old followup
             followup.delete()
-        return HttpResponseRedirect(reverse("helpdesk:view", args=[ticket.id]))
+            return HttpResponseRedirect(reverse("helpdesk:view", args=[ticket.id]))
 
 
 followup_edit = staff_member_required(followup_edit)
@@ -959,7 +1006,7 @@ def redirect_from_chosen_ticket(
     return redirect(chosen_ticket)
 
 
-@staff_member_required
+@helpdesk_staff_member_required
 def merge_tickets(request):
     """
     An intermediate view to merge up to 3 tickets in one main ticket.
@@ -971,6 +1018,11 @@ def merge_tickets(request):
     tickets = custom_fields = None
     if ticket_select_form.is_valid():
         tickets = ticket_select_form.cleaned_data.get("tickets")
+
+        huser = HelpdeskUser(request.user)
+        for t in tickets:
+            if not huser.can_access_queue(t.queue):
+                raise PermissionDenied()
 
         custom_fields = CustomField.objects.all()
 
@@ -1322,16 +1374,25 @@ class UpdateTicketView(
         extra = get_form_extra_kwargs(self.request.user)
         kwargs.update(extra)
         # Copy all data submitted that is not in the forms defined fields
-        form_fields = kwargs["form"].base_fields
-        all_fields = kwargs["form"].data
-        self.extra_context = {
-            "xform": {
-                k: v
-                for k, v in all_fields.items()
-                if k != "csrfmiddlewaretoken" and k not in form_fields
+        form = kwargs.get("form")
+        if form is not None and hasattr(form, "data") and form.data:
+            form_fields = form.base_fields
+            all_fields = form.data
+            self.extra_context = {
+                "xform": {
+                    k: v
+                    for k, v in all_fields.items()
+                    if k != "csrfmiddlewaretoken" and k not in form_fields
+                }
             }
-        }
-        return super().get_context_data(**kwargs)
+        else:
+            self.extra_context = {"xform": {}}
+        context = super().get_context_data(**kwargs)
+        ticket = self.get_object()
+        context["customfields_form"] = EditTicketCustomFieldForm(
+            self.request.POST or None, instance=ticket
+        )
+        return context
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -1650,7 +1711,7 @@ def run_report(request, report):
     update_summary_tables(report_queryset, report, summarytable, summarytable2)
     if report == "daysuntilticketclosedbymonth":
         for key in summarytable2.keys():
-            summarytable[key] = summarytable2[key] / summarytable[key]
+            summarytable[key] = round(summarytable2[key] / summarytable[key], 2)
 
     header1 = sorted(set(list(i for i, _ in summarytable.keys())))
 
@@ -1679,7 +1740,10 @@ def run_report(request, report):
     # Add total row to table
     total_data = ["Total"]
     for hdr in possible_options:
-        total_data.append(str(totals[hdr]))
+        val = totals[hdr]
+        if report == "daysuntilticketclosedbymonth":
+            val = round(val, 2)
+        total_data.append(str(val))
 
     return render(
         request,
@@ -1873,6 +1937,7 @@ ticket_cc_add = staff_member_required(ticket_cc_add)
 @helpdesk_staff_member_required
 def ticket_cc_del(request, ticket_id, cc_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
+    ticket_perm_check(request, ticket)
     cc = get_object_or_404(TicketCC, ticket__id=ticket_id, id=cc_id)
 
     if request.method == "POST":
@@ -1916,6 +1981,8 @@ ticket_dependency_add = staff_member_required(ticket_dependency_add)
 
 @helpdesk_staff_member_required
 def ticket_dependency_del(request, ticket_id, dependency_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    ticket_perm_check(request, ticket)
     dependency = get_object_or_404(
         TicketDependency, ticket__id=ticket_id, id=dependency_id
     )
@@ -1959,6 +2026,8 @@ ticket_resolves_add = staff_member_required(ticket_resolves_add)
 
 @helpdesk_staff_member_required
 def ticket_resolves_del(request, ticket_id, dependency_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    ticket_perm_check(request, ticket)
     dependency = get_object_or_404(
         TicketDependency, ticket__id=ticket_id, id=dependency_id
     )
@@ -1979,7 +2048,9 @@ def attachment_del(request, ticket_id, attachment_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
     ticket_perm_check(request, ticket)
 
-    attachment = get_object_or_404(FollowUpAttachment, id=attachment_id)
+    attachment = get_object_or_404(
+        FollowUpAttachment, id=attachment_id, followup__ticket=ticket
+    )
     if request.method == "POST":
         attachment.delete()
         return HttpResponseRedirect(reverse("helpdesk:view", args=[ticket_id]))

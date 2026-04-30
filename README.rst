@@ -8,7 +8,7 @@ django-helpdesk - A Django powered ticket tracker for small businesses.
 .. image:: https://codecov.io/gh/django-helpdesk/django-helpdesk/branch/develop/graph/badge.svg
   :target: https://codecov.io/gh/django-helpdesk/django-helpdesk
 
-Copyright 2009-2025 Ross Poulton and django-helpdesk contributors. All Rights Reserved.
+Copyright 2009-2026 Ross Poulton and django-helpdesk contributors. All Rights Reserved.
 See LICENSE for details.
 
 django-helpdesk was formerly known as Jutda Helpdesk, named after the
@@ -39,7 +39,7 @@ To start up a demo project server, run this command:
 
 or with docker::
 
-    docker build . -t demodesk
+    docker build --file standalone/Dockerfile -t demodesk ..
     docker run --rm -v "$PWD:/app" -p 8080:8080 demodesk
 
 then pointing your web browser at http://localhost:8080 (log in as user
@@ -64,18 +64,31 @@ Installation
 
 * |django_icon| To **integrate** with an existing Django application, follow the guidelines in `installation documentation <./docs/install.rst>`_ and `configuration documentation <./docs/configuration.rst>`_.
 
-.. |standalone_icon| image:: helpdesk/static/helpdesk/img/icon512.png
+.. |standalone_icon| image:: src/helpdesk/static/helpdesk/img/icon512.png
    :height: 24px
    :width: 24px
    :align: middle
 
-.. |django_icon| image:: helpdesk/static/helpdesk/img/django-logo-positive.png
+.. |django_icon| image:: src/helpdesk/static/helpdesk/img/django-logo-positive.png
    :height: 24px
    :width: 60px
    :align: middle
 
 Developer Environment
 ---------------------
+
+Front-end Dependencies
+~~~~~~~~~~~~~~~~~~~~~~
+Before you get started, make sure you have the following installed:
+
+- ``node`` – `Command-line JSON processor <https://docs.npmjs.com/downloading-and-installing-node-js-and-npm>`_
+- ``yarn`` – `JavaScript package manager <https://classic.yarnpkg.com/en/>`_
+- ``npm`` – `Node.js package manager <https://www.npmjs.com/package/npm>`_
+
+
+Build Dependencies
+~~~~~~~~~~~~~~~~~~
+
 The project uses the modern `uv` package manager: https://docs.astral.sh/uv/
 There are a number of options that make life a lot easier in the Makefile.
 To see option for the Makefile run: `make`
@@ -84,12 +97,12 @@ Follow these steps to set up your development environment to contribute to helpd
  - check out the helpdesk app to your local file system::
 
     git clone https://github.com/django-helpdesk/django-helpdesk.git
- 
+
  - Install the `uv` package manager::
     https://docs.astral.sh/uv/getting-started/installation/
 
  - install a virtual environment ::
-  
+
     uv venv
 
  - install the requirements for development::
@@ -97,16 +110,16 @@ Follow these steps to set up your development environment to contribute to helpd
     make develop
 
  - you can install optional dependencies using the --group option. The `make develop` script installs test dependencies.
-   
+
     # This installs pinax teams dependencies for production
     uv sync --all-extras --group teams
     # This installs pinax teams dependencies as well as test
     uv sync --all-extras --dev --group test --group teams
-    
+
 
 If you prefer working within an activated virtual environment instead of using the `uv` tool
 then you can use the normal command after the above step for creating the virtualenv to activate it::
-  
+
     source .venv/bin/activate
 
  - or depending on your shell it might be:
@@ -115,7 +128,7 @@ then you can use the normal command after the above step for creating the virtua
 The project enforces a standardized formatting in the CI/CD pipeline. To ensure you have the correct formatting run::
 
     make checkformat
-    
+
 To auto format any code use this::
 
     make format

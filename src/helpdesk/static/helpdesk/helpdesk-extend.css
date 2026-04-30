@@ -3,6 +3,18 @@ Bootstrap overrides
 */
 @import 'helpdesk-customize.css';
 
+/* Bootstrap 5 underlines links by default; restore Bootstrap 4 behaviour */
+a:not(.btn) {
+  text-decoration: none;
+}
+
+/* Bootstrap 5 removed the breadcrumb background; restore the BS4 grey */
+.breadcrumb {
+  background-color: #e9ecef;
+  padding: .75rem 1rem;
+  border-radius: .25rem;
+}
+
 .btn-file {
     position: relative;
     overflow: hidden;
@@ -103,11 +115,11 @@ pre {
 
 table .tickettitle {
   max-width: 250px;
-  font-weight: bold;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 
 .handle {
 	cursor: grab;

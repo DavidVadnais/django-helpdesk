@@ -68,24 +68,34 @@
                                     {% endfor %}
                                 {% endif %}
                             </p>
-                            <!--- ugly long test to suppress the following if it will be empty, to save vertical space -->
-                            {% with possible=helpdesk_settings.HELPDESK_SHOW_EDIT_BUTTON_FOLLOW_UP %}
-                                {% if  possible and followup.user and request.user == followup.user and not followup.ticketchange_set.all or  possible and user.is_superuser and helpdesk_settings.HELPDESK_SHOW_DELETE_BUTTON_SUPERUSER_FOLLOW_UP %}
+                            <!--- Show edit and delete buttons for follow-ups -->
+                            {% if helpdesk_settings.HELPDESK_SHOW_EDIT_BUTTON_FOLLOW_UP or helpdesk_settings.HELPDESK_SHOW_DELETE_BUTTON_SUPERUSER_FOLLOW_UP and user.is_superuser %}
                                 <small class="d-flex justify-content-end align-items-center gap-2">
-                                    {% if helpdesk_settings.HELPDESK_SHOW_EDIT_BUTTON_FOLLOW_UP %}
-                                        {% if followup.user and request.user == followup.user and not followup.ticketchange_set.all %}
-                                        <a href="{% url 'helpdesk:followup_edit' ticket.id followup.id %}" class='followup-edit'><button type="button" class="btn btn-warning btn-sm float-right"><i class="fas fa-edit"></i></button></a>
+                                    <!-- Edit button: show if setting enabled AND (user owns it OR user is superuser) -->
+                                    {% if helpdesk_settings.HELPDESK_SHOW_EDIT_BUTTON_FOLLOW_UP and followup.user %}
+                                        {% if request.user == followup.user or user.is_superuser %}
+                                            <a href="{% url 'helpdesk:followup_edit' ticket.id followup.id %}" class='followup-edit'>
+                                                <button type="button" class="btn btn-warning btn-sm">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </a>
+                                            {% if user.is_superuser and helpdesk_settings.HELPDESK_SHOW_DELETE_BUTTON_SUPERUSER_FOLLOW_UP %}
+                                                <span class="text-muted px-2">|</span>
+                                            {% endif %}
                                         {% endif %}
                                     {% endif %}
+                                    
+                                    <!-- Delete button: show if user is superuser AND setting enabled -->
                                     {% if user.is_superuser and helpdesk_settings.HELPDESK_SHOW_DELETE_BUTTON_SUPERUSER_FOLLOW_UP %}
-                                        <!-- if both edit and delete are present then put a spacer in -->
-                                        {% if helpdesk_settings.HELPDESK_SHOW_EDIT_BUTTON_FOLLOW_UP and followup.user and request.user == followup.user and not followup.ticketchange_set.all %}
-                                            <span class="text-muted px-2">|</span>
-                                        {% endif %}
-                                        <a href="{% url 'helpdesk:followup_delete' ticket.id followup.id %}" class='followup-edit'><button type="button" class="btn btn-warning btn-sm float-right"><i class="fas fa-trash"></i></button></a>
+                                        <a href="{% url 'helpdesk:followup_delete' ticket.id followup.id %}" class='followup-delete'>
+                                            <button type="button" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </a>
                                     {% endif %}
                                 </small>
-                            {% endif %}{% endwith %}
+                            {% endif %}
+                            
                         </div>
                         <!-- /.list-group-item -->
                     {% endfor %}
@@ -115,7 +125,7 @@
                 <dt>
                     <label for='commentBox'>{% trans "Comment / Resolution" %}</label>
                 </dt>
-                <dd><textarea rows='8' cols='70' name='comment' id='commentBox'>{% if form.errors %}{{ xform.comment }}{% endif %}</textarea></dd>
+                <dd><textarea rows='8' name='comment' id='commentBox' style='width:100%;min-height:200px;resize:vertical;box-sizing:border-box;'>{% if form.errors %}{{ xform.comment }}{% endif %}</textarea></dd>
                 {% url "helpdesk:help_context" as context_help_url %}
                 {% blocktrans %}
                 <dd class='form_help_text'>You can insert ticket and queue details in your message. For more information, see the <a href='{{ context_help_url }}'>context help page</a>.</dd>
@@ -123,7 +133,7 @@
 
                 <dt><label>{% trans "New Status" %}</label></dt>
                 {% if not ticket.can_be_resolved %}<dd>{% trans "This ticket cannot be resolved or closed until the tickets it depends on are resolved." %}</dd>{% endif %}
-                <dd><div class="form-group">
+                <dd><div class="mb-3">
                 {% for status_choice in ticket.get_allowed_status_flow %}
                     <label for='st_{{ status_choice.1|lower }}' class='{% if ticket.status == status_choice.0 %}active {% endif %}radio-inline'><input type='radio' name='new_status' value='{{ status_choice.0 }}' id='st_{{ status_choice.1|lower }}'{% if not ticket.can_be_resolved %} disabled='disabled'{% endif %}{% if ticket.status == status_choice.0 %} checked='checked'{% endif %}>{{ status_choice.1 }}{% if forloop.last %}{% else %} &raquo;{% endif %}</label>
                 {% endfor %}
@@ -244,7 +254,7 @@
 
         </fieldset>
 
-        <button class="btn btn-primary float-right" type='submit' onclick='$("#ShowFurtherEditOptions").click()'>{% trans "Update This Ticket" %}</button>
+        <button class="btn btn-primary float-end" type='submit' onclick='$("#ShowFurtherEditOptions").click()'>{% trans "Update This Ticket" %}</button>
 
         {% csrf_token %}</form>
 
@@ -258,9 +268,7 @@
                         {% csrf_token %}
                         <div class="modal-header">
                             <h5 class="modal-title">{% trans "Add a new checklist" %}</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="{% trans 'Close' %}">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
                         </div>
                         <div class="modal-body">
                             <p>{% trans "You can select a template to generate a checklist with a predefined set of tasks." %}</p>
@@ -320,7 +328,9 @@ $( function() {
           alert('{% trans 'If you want to update state of checklist tasks, please do a Follow-Up response and click on "Update checklists"' %}')
       })
 
-      $("[data-toggle=tooltip]").tooltip();
+      document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function(el) {
+          new bootstrap.Tooltip(el);
+      });
 
       {% if helpdesk_settings.HELPDESK_ENABLE_ATTACHMENTS %}
       $("#ShowFileUpload").click(function() {

@@ -29,7 +29,7 @@
                     <form method='post'>
                         {% csrf_token %}
                         <p>{% trans "Are you sure your want to delete checklist template" %} {{ checklist_template.name }} ?</p>
-                        <div class='buttons form-group text-center'>
+                        <div class='buttons mb-3 text-center'>
                             <a class="btn btn-secondary" href='{% url 'helpdesk:checklist_templates' %}'>
                                 <i class="fas fa-times"></i>
                                 {% trans "Don't Delete" %}

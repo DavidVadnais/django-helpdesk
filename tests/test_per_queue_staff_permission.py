@@ -1,10 +1,19 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.test.client import Client
 from django.urls import reverse
+from django.utils import timezone
 from helpdesk import settings
-from helpdesk.models import Queue, Ticket
+from helpdesk.models import (
+    FollowUp,
+    FollowUpAttachment,
+    Queue,
+    Ticket,
+    TicketCC,
+    TicketDependency,
+)
 from helpdesk.query import __Query__
 from helpdesk.user import HelpdeskUser
 
@@ -267,3 +276,125 @@ class PerQueueStaffMembershipTestCase(TestCase):
             3,
             "Queue choices were improperly limited by queue membership for a superuser",
         )
+
+
+class PerQueuePermissionSecurityTestCase(TestCase):
+    """
+    Tests that per-queue staff permission checks are enforced on destructive
+    endpoints. user_1 has access to queue_1 only and must be denied access to
+    resources belonging to queue_2.
+    """
+
+    def setUp(self):
+        self.original_setting = settings.HELPDESK_ENABLE_PER_QUEUE_STAFF_PERMISSION
+        settings.HELPDESK_ENABLE_PER_QUEUE_STAFF_PERMISSION = True
+        self.client = Client()
+        User = get_user_model()
+
+        self.queue_1 = Queue.objects.create(title="Queue 1", slug="q1")
+        self.queue_2 = Queue.objects.create(title="Queue 2", slug="q2")
+
+        self.user_1 = User.objects.create(
+            username="user_1", is_staff=True, email="u1@example.com"
+        )
+        self.user_1.set_password("pass")
+        self.user_1.save()
+        p1 = Permission.objects.get(codename=self.queue_1.permission_name[9:])
+        self.user_1.user_permissions.add(p1)
+
+        self.ticket_1 = Ticket.objects.create(title="Ticket in Q1", queue=self.queue_1)
+        self.ticket_2 = Ticket.objects.create(title="Ticket in Q2", queue=self.queue_2)
+        self.ticket_2b = Ticket.objects.create(
+            title="Ticket 2b in Q2", queue=self.queue_2
+        )
+
+        followup_2 = FollowUp.objects.create(
+            ticket=self.ticket_2, title="FU", date=timezone.now()
+        )
+        self.attachment_2 = FollowUpAttachment.objects.create(
+            followup=followup_2,
+            file=SimpleUploadedFile(
+                "secret.txt", b"content", content_type="text/plain"
+            ),
+        )
+
+        self.cc_2 = TicketCC.objects.create(
+            ticket=self.ticket_2, email="cc@example.com"
+        )
+
+        self.dep_2 = TicketDependency.objects.create(
+            ticket=self.ticket_2, depends_on=self.ticket_1
+        )
+
+    def tearDown(self):
+        settings.HELPDESK_ENABLE_PER_QUEUE_STAFF_PERMISSION = self.original_setting
+
+    def _login_user_1(self):
+        self.client.login(username="user_1", password="pass")
+
+    def test_attachment_del_idor_blocked(self):
+        """user_1 cannot delete an attachment from queue_2 by pairing their
+        accessible ticket_1 id with queue_2's attachment id."""
+        self._login_user_1()
+        url = reverse(
+            "helpdesk:attachment_del",
+            kwargs={
+                "ticket_id": self.ticket_1.id,
+                "attachment_id": self.attachment_2.id,
+            },
+        )
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 404)
+        self.assertTrue(
+            FollowUpAttachment.objects.filter(id=self.attachment_2.id).exists()
+        )
+
+    def test_ticket_cc_del_blocked(self):
+        """user_1 cannot delete a CC entry on a ticket in queue_2."""
+        self._login_user_1()
+        url = reverse(
+            "helpdesk:ticket_cc_del",
+            kwargs={"ticket_id": self.ticket_2.id, "cc_id": self.cc_2.id},
+        )
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(TicketCC.objects.filter(id=self.cc_2.id).exists())
+
+    def test_ticket_dependency_del_blocked(self):
+        """user_1 cannot delete a dependency on a ticket in queue_2."""
+        self._login_user_1()
+        url = reverse(
+            "helpdesk:ticket_dependency_del",
+            kwargs={"ticket_id": self.ticket_2.id, "dependency_id": self.dep_2.id},
+        )
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(TicketDependency.objects.filter(id=self.dep_2.id).exists())
+
+    def test_ticket_resolves_del_blocked(self):
+        """user_1 cannot delete a resolves-link on a ticket in queue_2."""
+        self._login_user_1()
+        url = reverse(
+            "helpdesk:ticket_resolves_del",
+            kwargs={"ticket_id": self.ticket_2.id, "dependency_id": self.dep_2.id},
+        )
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(TicketDependency.objects.filter(id=self.dep_2.id).exists())
+
+    def test_merge_tickets_blocked_for_inaccessible_queue(self):
+        """user_1 cannot merge tickets when one belongs to queue_2."""
+        self._login_user_1()
+        url = reverse("helpdesk:merge_tickets") + "?tickets=%d&tickets=%d" % (
+            self.ticket_2.id,
+            self.ticket_2b.id,
+        )
+        response = self.client.post(url, {"chosen_ticket": self.ticket_2.id})
+        self.assertEqual(response.status_code, 403)
+
+    def test_rss_queue_blocked_for_inaccessible_queue(self):
+        """user_1 cannot read the RSS feed for queue_2."""
+        self._login_user_1()
+        url = reverse("helpdesk:rss_queue", kwargs={"queue_slug": self.queue_2.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
