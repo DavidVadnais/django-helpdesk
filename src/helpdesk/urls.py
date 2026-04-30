@@ -83,16 +83,6 @@ if helpdesk_settings.HELPDESK_UI_ENABLED:
             name="ticket_cc_del",
         ),
         path(
-            "tickets/<int:ticket_id>/dependency/add/",
-            staff.ticket_dependency_add,
-            name="ticket_dependency_add",
-        ),
-        path(
-            "tickets/<int:ticket_id>/dependency/delete/<int:dependency_id>/",
-            staff.ticket_dependency_del,
-            name="ticket_dependency_del",
-        ),
-        path(
             "tickets/<int:ticket_id>/resolves/add/",
             staff.ticket_resolves_add,
             name="ticket_resolves_add",
@@ -149,24 +139,6 @@ if helpdesk_settings.HELPDESK_UI_ENABLED:
             staff.timeline_ticket_list,
             name="timeline_ticket_list",
         ),
-    ]
-
-if helpdesk_settings.HELPDESK_ENABLE_DEPENDENCIES_ON_TICKET:
-    urlpatterns += [
-        path(
-            "tickets/<int:ticket_id>/dependency/add/",
-            staff.ticket_dependency_add,
-            name="ticket_dependency_add",
-        ),
-        path(
-            "tickets/<int:ticket_id>/dependency/delete/<int:dependency_id>/",
-            staff.ticket_dependency_del,
-            name="ticket_dependency_del",
-        ),
-    ]
-
-if helpdesk_settings.HELPDESK_UI_ENABLED:
-    urlpatterns += [
         path("", protect_view(public.Homepage.as_view()), name="home"),
         path(
             "tickets/my-tickets/",
@@ -187,6 +159,19 @@ if helpdesk_settings.HELPDESK_UI_ENABLED:
         path("view/", protect_view(public.ViewTicket.as_view()), name="public_view"),
         path("change_language/", public.change_language, name="public_change_language"),
     ]
+    if helpdesk_settings.HELPDESK_ENABLE_DEPENDENCIES_ON_TICKET:
+        urlpatterns += [
+            path(
+                "tickets/<int:ticket_id>/dependency/add/",
+                staff.ticket_dependency_add,
+                name="ticket_dependency_add",
+            ),
+            path(
+                "tickets/<int:ticket_id>/dependency/delete/<int:dependency_id>/",
+                staff.ticket_dependency_del,
+                name="ticket_dependency_del",
+            ),
+        ]
 
 urlpatterns += [
     re_path(
