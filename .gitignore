@@ -58,3 +58,8 @@ src/helpdesk/static/helpdesk/vendor/*
 # === make rundemo ===
 uv.lock
 demodesk/db.sqlite3
+
+# Development files
+.vscode/
+.cursor/
+.devcontainer/
