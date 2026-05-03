@@ -51,139 +51,137 @@ class DirectTemplateView(TemplateView):
 app_name = "helpdesk"
 
 base64_pattern = r"(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+urlpatterns = []
 
-urlpatterns = [
-    path("dashboard/", staff.dashboard, name="dashboard"),
-    path("tickets/", staff.ticket_list, name="list"),
-    path("tickets/update/", staff.mass_update, name="mass_update"),
-    path("tickets/merge", staff.merge_tickets, name="merge_tickets"),
-    path("tickets/<int:ticket_id>/", staff.view_ticket, name="view"),
-    path(
-        "tickets/<int:ticket_id>/followup_edit/<int:followup_id>/",
-        staff.followup_edit,
-        name="followup_edit",
-    ),
-    path(
-        "tickets/<int:ticket_id>/followup_delete/<int:followup_id>/",
-        staff.followup_delete,
-        name="followup_delete",
-    ),
-    path("tickets/<int:ticket_id>/edit/", staff.edit_ticket, name="edit"),
-    path("tickets/<int:ticket_id>/update/", staff.update_ticket_view, name="update"),
-    path("tickets/<int:ticket_id>/delete/", staff.delete_ticket, name="delete"),
-    path("tickets/<int:ticket_id>/hold/", staff.hold_ticket, name="hold"),
-    path("tickets/<int:ticket_id>/unhold/", staff.unhold_ticket, name="unhold"),
-    path("tickets/<int:ticket_id>/cc/", staff.ticket_cc, name="ticket_cc"),
-    path("tickets/<int:ticket_id>/cc/add/", staff.ticket_cc_add, name="ticket_cc_add"),
-    path(
-        "tickets/<int:ticket_id>/cc/delete/<int:cc_id>/",
-        staff.ticket_cc_del,
-        name="ticket_cc_del",
-    ),
-    path(
-        "tickets/<int:ticket_id>/dependency/add/",
-        staff.ticket_dependency_add,
-        name="ticket_dependency_add",
-    ),
-    path(
-        "tickets/<int:ticket_id>/dependency/delete/<int:dependency_id>/",
-        staff.ticket_dependency_del,
-        name="ticket_dependency_del",
-    ),
-    path(
-        "tickets/<int:ticket_id>/resolves/add/",
-        staff.ticket_resolves_add,
-        name="ticket_resolves_add",
-    ),
-    path(
-        "tickets/<int:ticket_id>/resolves/delete/<int:dependency_id>/",
-        staff.ticket_resolves_del,
-        name="ticket_resolves_del",
-    ),
-    path(
-        "tickets/<int:ticket_id>/attachment_delete/<int:attachment_id>/",
-        staff.attachment_del,
-        name="attachment_del",
-    ),
-    path(
-        "tickets/<int:ticket_id>/checklists/<int:checklist_id>/",
-        staff.edit_ticket_checklist,
-        name="edit_ticket_checklist",
-    ),
-    path(
-        "tickets/<int:ticket_id>/checklists/<int:checklist_id>/delete/",
-        staff.delete_ticket_checklist,
-        name="delete_ticket_checklist",
-    ),
-    re_path(r"^raw/(?P<type_>\w+)/$", staff.raw_details, name="raw"),
-    path("rss/", staff.rss_list, name="rss_index"),
-    path("reports/", staff.report_index, name="report_index"),
-    re_path(r"^reports/(?P<report>\w+)/$", staff.run_report, name="run_report"),
-    path("saved-searches/", staff.saved_searches_list, name="saved_searches_list"),
-    path("save_query/", staff.save_query, name="savequery"),
-    path("delete_query/<int:pk>/", staff.delete_saved_query, name="delete_query"),
-    path("settings/", staff.EditUserSettingsView.as_view(), name="user_settings"),
-    path("ignore/", staff.email_ignore, name="email_ignore"),
-    path("ignore/add/", staff.email_ignore_add, name="email_ignore_add"),
-    path("ignore/delete/<int:id>/", staff.email_ignore_del, name="email_ignore_del"),
-    path("checklist-templates/", staff.checklist_templates, name="checklist_templates"),
-    path(
-        "checklist-templates/<int:checklist_template_id>/",
-        staff.checklist_templates,
-        name="edit_checklist_template",
-    ),
-    path(
-        "checklist-templates/<int:checklist_template_id>/delete/",
-        staff.delete_checklist_template,
-        name="delete_checklist_template",
-    ),
-    re_path(
-        r"^datatables_ticket_list/(?P<query>{})$".format(base64_pattern),
-        staff.datatables_ticket_list,
-        name="datatables_ticket_list",
-    ),
-    re_path(
-        r"^timeline_ticket_list/(?P<query>{})$".format(base64_pattern),
-        staff.timeline_ticket_list,
-        name="timeline_ticket_list",
-    ),
-]
-
-if helpdesk_settings.HELPDESK_ENABLE_DEPENDENCIES_ON_TICKET:
+if helpdesk_settings.HELPDESK_UI_ENABLED:
     urlpatterns += [
+        path("dashboard/", staff.dashboard, name="dashboard"),
+        path("tickets/", staff.ticket_list, name="list"),
+        path("tickets/update/", staff.mass_update, name="mass_update"),
+        path("tickets/merge", staff.merge_tickets, name="merge_tickets"),
+        path("tickets/<int:ticket_id>/", staff.view_ticket, name="view"),
         path(
-            "tickets/<int:ticket_id>/dependency/add/",
-            staff.ticket_dependency_add,
-            name="ticket_dependency_add",
+            "tickets/<int:ticket_id>/followup_edit/<int:followup_id>/",
+            staff.followup_edit,
+            name="followup_edit",
         ),
         path(
-            "tickets/<int:ticket_id>/dependency/delete/<int:dependency_id>/",
-            staff.ticket_dependency_del,
-            name="ticket_dependency_del",
+            "tickets/<int:ticket_id>/followup_delete/<int:followup_id>/",
+            staff.followup_delete,
+            name="followup_delete",
         ),
+        path("tickets/<int:ticket_id>/edit/", staff.edit_ticket, name="edit"),
+        path(
+            "tickets/<int:ticket_id>/update/", staff.update_ticket_view, name="update"
+        ),
+        path("tickets/<int:ticket_id>/delete/", staff.delete_ticket, name="delete"),
+        path("tickets/<int:ticket_id>/hold/", staff.hold_ticket, name="hold"),
+        path("tickets/<int:ticket_id>/unhold/", staff.unhold_ticket, name="unhold"),
+        path("tickets/<int:ticket_id>/cc/", staff.ticket_cc, name="ticket_cc"),
+        path(
+            "tickets/<int:ticket_id>/cc/add/", staff.ticket_cc_add, name="ticket_cc_add"
+        ),
+        path(
+            "tickets/<int:ticket_id>/cc/delete/<int:cc_id>/",
+            staff.ticket_cc_del,
+            name="ticket_cc_del",
+        ),
+        path(
+            "tickets/<int:ticket_id>/resolves/add/",
+            staff.ticket_resolves_add,
+            name="ticket_resolves_add",
+        ),
+        path(
+            "tickets/<int:ticket_id>/resolves/delete/<int:dependency_id>/",
+            staff.ticket_resolves_del,
+            name="ticket_resolves_del",
+        ),
+        path(
+            "tickets/<int:ticket_id>/attachment_delete/<int:attachment_id>/",
+            staff.attachment_del,
+            name="attachment_del",
+        ),
+        path(
+            "tickets/<int:ticket_id>/checklists/<int:checklist_id>/",
+            staff.edit_ticket_checklist,
+            name="edit_ticket_checklist",
+        ),
+        path(
+            "tickets/<int:ticket_id>/checklists/<int:checklist_id>/delete/",
+            staff.delete_ticket_checklist,
+            name="delete_ticket_checklist",
+        ),
+        re_path(r"^raw/(?P<type_>\w+)/$", staff.raw_details, name="raw"),
+        path("rss/", staff.rss_list, name="rss_index"),
+        path("reports/", staff.report_index, name="report_index"),
+        re_path(r"^reports/(?P<report>\w+)/$", staff.run_report, name="run_report"),
+        path("saved-searches/", staff.saved_searches_list, name="saved_searches_list"),
+        path("save_query/", staff.save_query, name="savequery"),
+        path("delete_query/<int:pk>/", staff.delete_saved_query, name="delete_query"),
+        path("settings/", staff.EditUserSettingsView.as_view(), name="user_settings"),
+        path("ignore/", staff.email_ignore, name="email_ignore"),
+        path("ignore/add/", staff.email_ignore_add, name="email_ignore_add"),
+        path(
+            "ignore/delete/<int:id>/", staff.email_ignore_del, name="email_ignore_del"
+        ),
+        path(
+            "checklist-templates/",
+            staff.checklist_templates,
+            name="checklist_templates",
+        ),
+        path(
+            "checklist-templates/<int:checklist_template_id>/",
+            staff.checklist_templates,
+            name="edit_checklist_template",
+        ),
+        path(
+            "checklist-templates/<int:checklist_template_id>/delete/",
+            staff.delete_checklist_template,
+            name="delete_checklist_template",
+        ),
+        re_path(
+            r"^datatables_ticket_list/(?P<query>{})$".format(base64_pattern),
+            staff.datatables_ticket_list,
+            name="datatables_ticket_list",
+        ),
+        re_path(
+            r"^timeline_ticket_list/(?P<query>{})$".format(base64_pattern),
+            staff.timeline_ticket_list,
+            name="timeline_ticket_list",
+        ),
+        path("", protect_view(public.Homepage.as_view()), name="home"),
+        path(
+            "tickets/my-tickets/",
+            protect_view(public.MyTickets.as_view()),
+            name="my-tickets",
+        ),
+        path("tickets/submit/", public.create_ticket, name="submit"),
+        path(
+            "tickets/submit_iframe/",
+            protect_view(public.CreateTicketIframeView.as_view()),
+            name="submit_iframe",
+        ),
+        path(
+            "tickets/success_iframe/",  # Ticket was submitted successfully
+            protect_view(public.SuccessIframeView.as_view()),
+            name="success_iframe",
+        ),
+        path("view/", protect_view(public.ViewTicket.as_view()), name="public_view"),
+        path("change_language/", public.change_language, name="public_change_language"),
     ]
-
-urlpatterns += [
-    path("", protect_view(public.Homepage.as_view()), name="home"),
-    path(
-        "tickets/my-tickets/",
-        protect_view(public.MyTickets.as_view()),
-        name="my-tickets",
-    ),
-    path("tickets/submit/", public.create_ticket, name="submit"),
-    path(
-        "tickets/submit_iframe/",
-        protect_view(public.CreateTicketIframeView.as_view()),
-        name="submit_iframe",
-    ),
-    path(
-        "tickets/success_iframe/",  # Ticket was submitted successfully
-        protect_view(public.SuccessIframeView.as_view()),
-        name="success_iframe",
-    ),
-    path("view/", protect_view(public.ViewTicket.as_view()), name="public_view"),
-    path("change_language/", public.change_language, name="public_change_language"),
-]
+    if helpdesk_settings.HELPDESK_ENABLE_DEPENDENCIES_ON_TICKET:
+        urlpatterns += [
+            path(
+                "tickets/<int:ticket_id>/dependency/add/",
+                staff.ticket_dependency_add,
+                name="ticket_dependency_add",
+            ),
+            path(
+                "tickets/<int:ticket_id>/dependency/delete/<int:dependency_id>/",
+                staff.ticket_dependency_del,
+                name="ticket_dependency_del",
+            ),
+        ]
 
 urlpatterns += [
     re_path(
@@ -214,15 +212,18 @@ urlpatterns += [
 ]
 
 
-router = DefaultRouter()
-router.register(r"tickets", TicketViewSet, basename="ticket")
-router.register(r"user_tickets", UserTicketViewSet, basename="user_tickets")
-router.register(r"followups", FollowUpViewSet, basename="followups")
-router.register(
-    r"followups-attachments", FollowUpAttachmentViewSet, basename="followupattachments"
-)
-router.register(r"users", CreateUserView, basename="user")
-urlpatterns += [path("api/", include(router.urls))]
+if helpdesk_settings.HELPDESK_API_ENABLED:
+    router = DefaultRouter()
+    router.register(r"tickets", TicketViewSet, basename="ticket")
+    router.register(r"user_tickets", UserTicketViewSet, basename="user_tickets")
+    router.register(r"followups", FollowUpViewSet, basename="followups")
+    router.register(
+        r"followups-attachments",
+        FollowUpAttachmentViewSet,
+        basename="followupattachments",
+    )
+    router.register(r"users", CreateUserView, basename="user")
+    urlpatterns += [path("api/", include(router.urls))]
 
 
 urlpatterns += [
