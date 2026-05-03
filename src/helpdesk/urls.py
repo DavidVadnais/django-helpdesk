@@ -71,12 +71,16 @@ if helpdesk_settings.HELPDESK_UI_ENABLED:
             name="followup_delete",
         ),
         path("tickets/<int:ticket_id>/edit/", staff.edit_ticket, name="edit"),
-        path("tickets/<int:ticket_id>/update/", staff.update_ticket_view, name="update"),
+        path(
+            "tickets/<int:ticket_id>/update/", staff.update_ticket_view, name="update"
+        ),
         path("tickets/<int:ticket_id>/delete/", staff.delete_ticket, name="delete"),
         path("tickets/<int:ticket_id>/hold/", staff.hold_ticket, name="hold"),
         path("tickets/<int:ticket_id>/unhold/", staff.unhold_ticket, name="unhold"),
         path("tickets/<int:ticket_id>/cc/", staff.ticket_cc, name="ticket_cc"),
-        path("tickets/<int:ticket_id>/cc/add/", staff.ticket_cc_add, name="ticket_cc_add"),
+        path(
+            "tickets/<int:ticket_id>/cc/add/", staff.ticket_cc_add, name="ticket_cc_add"
+        ),
         path(
             "tickets/<int:ticket_id>/cc/delete/<int:cc_id>/",
             staff.ticket_cc_del,
@@ -117,8 +121,14 @@ if helpdesk_settings.HELPDESK_UI_ENABLED:
         path("settings/", staff.EditUserSettingsView.as_view(), name="user_settings"),
         path("ignore/", staff.email_ignore, name="email_ignore"),
         path("ignore/add/", staff.email_ignore_add, name="email_ignore_add"),
-        path("ignore/delete/<int:id>/", staff.email_ignore_del, name="email_ignore_del"),
-        path("checklist-templates/", staff.checklist_templates, name="checklist_templates"),
+        path(
+            "ignore/delete/<int:id>/", staff.email_ignore_del, name="email_ignore_del"
+        ),
+        path(
+            "checklist-templates/",
+            staff.checklist_templates,
+            name="checklist_templates",
+        ),
         path(
             "checklist-templates/<int:checklist_template_id>/",
             staff.checklist_templates,
