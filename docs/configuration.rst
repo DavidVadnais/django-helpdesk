@@ -46,6 +46,18 @@ Before django-helpdesk will be much use, you need to do some basic configuration
 
    This will, on a weekly basis, create exclusions for the coming weekend.
 
+   If you wish to temporarily pause escalations for a specific ticket (e.g., while waiting for a customer response or a third-party fix), you can put it **on hold**. This prevents the automatic escalation command from acting on that ticket.
+
+   To put a ticket on hold:  
+   - In the ticket detail page, check the box labelled *"On Hold"* (or similar, depending on your template) and save the ticket.  
+
+   **Important details about the "on hold" feature:**
+   - It **only affects automatic escalations**. The `escalate_tickets` command will skip any ticket marked as "on hold".
+   - It does **not** block users from adding manual follow-ups or changing other ticket fields.
+   - The system does **not** automatically remove the "on hold" status when a new follow-up is added. You must manually uncheck the box to re-enable escalations.
+
+   This feature is useful when you need to stop the escalation clock without losing the ticket's history or preventing manual work.
+
 6. Log in to your Django admin screen, and go to the 'Sites' module. If the site ``example.com`` is listed, click it and update the details so they are relevant for your website.
 
 7. If you do not send mail directly from your web server (eg, you need to use an SMTP server) then edit your ``settings.py`` file so it contains your mail server details::
