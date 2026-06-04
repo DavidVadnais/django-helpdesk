@@ -26,14 +26,14 @@ help:
 .PHONY: develop
 develop:
 	$(UV) venv
-	$(UV) sync --all-extras --dev --group test
+	$(UV) sync --dev --group test
 	$(UV) tool install pre-commit --with pre-commit-uv --force-reinstall
 	pre-commit install
 
 #: sync - Synchronize the environment with the project configuration
 .PHONY: sync
 sync:
-	$(UV) sync --all-extras --dev --group test
+	$(UV) sync --dev --group test
 
 
 #: clean - Basic cleanup, mostly temporary files.
@@ -106,7 +106,7 @@ readme:
 demo:
 	yarn install
 	make static-vendor
-	uv  sync  --all-extras --dev --group test --group teams
+	uv  sync --dev --group test
 	uv run manage.py migrate --noinput
 	# Install fixtures
 	uv run manage.py loaddata emailtemplate.json
