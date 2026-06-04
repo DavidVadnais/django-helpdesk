@@ -114,11 +114,6 @@ HELPDESK_TRANSLATE_TICKET_COMMENTS_LANG = getattr(
     ["en", "de", "es", "fr", "it", "ru"],
 )
 
-# show link to 'change password' on 'User Settings' page?
-HELPDESK_SHOW_CHANGE_PASSWORD = getattr(
-    settings, "HELPDESK_SHOW_CHANGE_PASSWORD", False
-)
-
 # allow user to override default layout for 'followups' - work in progress.
 HELPDESK_FOLLOWUP_MOD = getattr(settings, "HELPDESK_FOLLOWUP_MOD", False)
 

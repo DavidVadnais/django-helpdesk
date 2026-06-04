@@ -144,7 +144,6 @@ Configuration for Production Use
 |----------|---------|-------------|
 | ```HELPDESK_KB_ENABLED``` | ```True``` | Enable knowledge base |
 | ```HELPDESK_TICKETS_TIMELINE_ENABLED``` | ```True``` | Enable ticket timeline |
-| ```HELPDESK_SHOW_CHANGE_PASSWORD``` | ```True``` | Allow users to change passwords |
 
 
 
