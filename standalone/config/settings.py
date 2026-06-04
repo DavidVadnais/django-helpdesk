@@ -48,13 +48,23 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.humanize",
     "bootstrap4form",
-    "account",  # Required by pinax-teams
-    "pinax.invitations",  # required by pinax-teams
-    "pinax.teams",  # team support
-    "reversion",  # required by pinax-teams
     "helpdesk",  # This is us!
     "rest_framework",  # required for the API
 ]
+
+# Default teams mode to disabled unless overridden by an environment variable set to "false"
+HELPDESK_TEAMS_MODE_ENABLED = (
+    os.getenv("HELPDESK_TEAMS_MODE_ENABLED", "false").lower() == "true"
+)
+if HELPDESK_TEAMS_MODE_ENABLED:
+    INSTALLED_APPS.extend(
+        [
+            "account",  # Required by pinax-teams
+            "pinax.invitations",  # required by pinax-teams
+            "pinax.teams",  # team support
+            "reversion",  # required by pinax-teams
+        ]
+    )
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

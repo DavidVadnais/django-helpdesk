@@ -33,9 +33,9 @@ ALLOWED_HOSTS = []
 # an internal demo you don't need such security, but please
 # remember when setting up your own development / production server!
 
-# Default teams mode to enabled unless overridden by an environment variable set to "false"
+# Default teams mode to disabled unless overridden by an environment variable set to "false"
 HELPDESK_TEAMS_MODE_ENABLED = (
-    os.getenv("HELPDESK_TEAMS_MODE_ENABLED", "true").lower() == "true"
+    os.getenv("HELPDESK_TEAMS_MODE_ENABLED", "false").lower() == "true"
 )
 
 # Application definition
