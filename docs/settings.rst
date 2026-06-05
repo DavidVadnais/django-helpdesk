@@ -102,10 +102,6 @@ These changes are visible throughout django-helpdesk
 
   **Default:** ``HELPDESK_TRANSLATE_TICKET_COMMENTS_LANG = ["en", "de", "fr", "it", "ru"]``
 
-- **HELPDESK_SHOW_CHANGE_PASSWORD** Show link to 'change password' on 'User Settings' page?
-
-  **Default:** ``HELPDESK_SHOW_CHANGE_PASSWORD = False``
-
 - **HELPDESK_FOLLOWUP_MOD** Allow user to override default layout for 'followups' (work in progress)
 
   **Default:** ``HELPDESK_FOLLOWUP_MOD = False``
