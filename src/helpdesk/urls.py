@@ -139,6 +139,12 @@ if helpdesk_settings.HELPDESK_UI_ENABLED:
             staff.delete_checklist_template,
             name="delete_checklist_template",
         ),
+        path("kanban/", staff.kanban_board, name="kanban"),
+        path(
+            "tickets/<int:ticket_id>/kanban-update/",
+            staff.kanban_update_ticket,
+            name="kanban_update",
+        ),
         re_path(
             r"^datatables_ticket_list/(?P<query>{})$".format(base64_pattern),
             staff.datatables_ticket_list,

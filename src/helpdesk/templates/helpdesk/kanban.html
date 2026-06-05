@@ -1,0 +1,258 @@
+{% extends "helpdesk/base.html" %}{% load i18n %}
+
+{% block helpdesk_title %}{% trans "Kanban Board" %}{% endblock %}
+
+{% block helpdesk_head %}
+<style>
+  .kanban-wrapper {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    align-items: flex-start;
+  }
+  .kanban-column {
+    min-width: 240px;
+    max-width: 280px;
+    flex: 1;
+    background: #2e3440;
+    border-radius: 6px;
+    padding: 0.75rem;
+  }
+  .kanban-column-header {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .kanban-drop-zone {
+    min-height: 60px;
+    transition: background 0.15s;
+    border-radius: 4px;
+  }
+  .kanban-drop-zone.drag-over {
+    background: rgba(255,255,255,0.07);
+    outline: 2px dashed rgba(255,255,255,0.3);
+  }
+  .kanban-card {
+    background: #3b4252;
+    border-radius: 5px;
+    padding: 0.6rem 0.75rem;
+    margin-bottom: 0.5rem;
+    cursor: grab;
+    transition: box-shadow 0.15s, opacity 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .kanban-card:active { cursor: grabbing; }
+  .kanban-card.dragging { opacity: 0.45; }
+  .kanban-card.priority-1 { border-left-color: #bf616a; }
+  .kanban-card.priority-2 { border-left-color: #d08770; }
+  .kanban-card.priority-3 { border-left-color: #ebcb8b; }
+  .kanban-card.priority-4 { border-left-color: #a3be8c; }
+  .kanban-card.priority-5 { border-left-color: #5e81ac; }
+  .kanban-card-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #eceff4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  .kanban-card-meta {
+    font-size: 0.72rem;
+    color: #81a1c1;
+    margin-top: 0.3rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .kanban-card-meta .badge {
+    font-size: 0.68rem;
+  }
+  .kanban-badge {
+    background: rgba(255,255,255,0.12);
+    color: #d8dee9;
+    border-radius: 10px;
+    padding: 0.1rem 0.5rem;
+    font-size: 0.75rem;
+  }
+  .kanban-toast {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 9999;
+    min-width: 220px;
+  }
+</style>
+{% endblock %}
+
+{% block helpdesk_breadcrumb %}
+<li class="breadcrumb-item active">{% trans "Kanban Board" %}</li>
+{% endblock %}
+
+{% block helpdesk_body %}
+<div class="mb-3">
+  <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+    <div>
+      <h4 class="text-light mb-1">{% trans "Kanban Board" %}</h4>
+      <p class="text-secondary small mb-0">{% trans "Drag cards between columns to update their status." %}</p>
+    </div>
+    <div>
+      <form method="get" class="d-flex align-items-center gap-2 flex-wrap">
+        <div>
+          <label for="due-weeks-input" class="text-light small fw-semibold d-block mb-1">
+            {% trans "Filter by due date" %}
+          </label>
+          <div class="d-flex align-items-center gap-2">
+            <span class="text-light small text-nowrap">{% trans "Due in next" %}</span>
+            <input id="due-weeks-input" type="number" name="due_weeks" min="1" max="52"
+                   value="{{ due_weeks|default:'' }}"
+                   class="form-control form-control-sm"
+                   style="width:70px;"
+                   placeholder="—">
+            <span class="text-light small text-nowrap">{% trans "weeks" %}</span>
+            <button type="submit" class="btn btn-sm btn-primary">{% trans "Apply" %}</button>
+            {% if due_weeks %}
+            <a href="{% url 'helpdesk:kanban' %}" class="btn btn-sm btn-outline-secondary">{% trans "Clear" %}</a>
+            {% endif %}
+          </div>
+          <p class="text-secondary small mt-1 mb-0">
+            {% trans "Only shows tickets with a due date set between now and the chosen number of weeks from today." %}
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+  {% if due_weeks %}
+  <div class="alert alert-info mt-2 py-2 mb-0 small">
+    {% blocktrans with w=due_weeks %}Showing only tickets due within the next <strong>{{ w }} week{{ w|pluralize }}</strong>. Tickets without a due date are hidden.{% endblocktrans %}
+  </div>
+  {% endif %}
+</div>
+
+<div class="kanban-wrapper" id="kanban-wrapper">
+  {% for col in columns %}
+  <div class="kanban-column">
+    <div class="kanban-column-header text-light">
+      <span>{{ col.label }}</span>
+      <span class="kanban-badge">{{ col.tickets|length }}</span>
+    </div>
+    <div class="kanban-drop-zone" data-status="{{ col.status }}">
+      {% for ticket in col.tickets %}
+      <div class="kanban-card priority-{{ ticket.priority }}"
+           draggable="true"
+           data-ticket-id="{{ ticket.id }}"
+           data-current-status="{{ ticket.status }}">
+        <a href="{% url 'helpdesk:view' ticket.id %}" class="kanban-card-title d-block text-decoration-none" title="{{ ticket.title }}">
+          #{{ ticket.id }} {{ ticket.title }}
+        </a>
+        <div class="kanban-card-meta">
+          <span>{{ ticket.queue.title }}</span>
+          {% if ticket.assigned_to %}
+          <span>&#8212; {{ ticket.assigned_to.get_username }}</span>
+          {% endif %}
+          {% if ticket.due_date %}
+          <span class="ms-auto text-nowrap">&#128337; {{ ticket.due_date|date:"M j" }}</span>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="kanban-toast" id="kanban-toast" style="display:none;">
+  <div class="alert mb-0" id="kanban-toast-msg" role="alert"></div>
+</div>
+{% endblock %}
+
+{% block helpdesk_js %}
+<script>
+(function () {
+  const csrfToken = document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '';
+  let draggedCard = null;
+
+  document.querySelectorAll('.kanban-card').forEach(card => {
+    card.addEventListener('dragstart', e => {
+      draggedCard = card;
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', card.dataset.ticketId);
+    });
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      draggedCard = null;
+    });
+  });
+
+  document.querySelectorAll('.kanban-drop-zone').forEach(zone => {
+    zone.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      zone.classList.add('drag-over');
+    });
+    zone.addEventListener('dragleave', e => {
+      if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+    });
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      if (!draggedCard) return;
+      const newStatus = parseInt(zone.dataset.status);
+      const ticketId = draggedCard.dataset.ticketId;
+      const oldStatus = parseInt(draggedCard.dataset.currentStatus);
+      if (newStatus === oldStatus) return;
+
+      zone.appendChild(draggedCard);
+      draggedCard.dataset.currentStatus = newStatus;
+
+      updateColumnCounts();
+
+      fetch(`{% url 'helpdesk:kanban_update' 0 %}`.replace('/0/', `/${ticketId}/`), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken,
+        },
+        body: JSON.stringify({ status: newStatus }),
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.status === 'ok') {
+            showToast('{% trans "Status updated." %}', 'success');
+          } else {
+            showToast(data.error || '{% trans "Update failed." %}', 'danger');
+          }
+        })
+        .catch(() => showToast('{% trans "Network error." %}', 'danger'));
+    });
+  });
+
+  function updateColumnCounts() {
+    document.querySelectorAll('.kanban-column').forEach(col => {
+      const count = col.querySelectorAll('.kanban-card').length;
+      col.querySelector('.kanban-badge').textContent = count;
+    });
+  }
+
+  let toastTimer;
+  function showToast(msg, type) {
+    const toast = document.getElementById('kanban-toast');
+    const msgEl = document.getElementById('kanban-toast-msg');
+    msgEl.className = `alert alert-${type} mb-0`;
+    msgEl.textContent = msg;
+    toast.style.display = 'block';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 2500);
+  }
+})();
+</script>
+{% endblock %}

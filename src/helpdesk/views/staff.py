@@ -2220,3 +2220,56 @@ def delete_checklist_template(request, checklist_template_id):
             "checklist_template": checklist_template,
         },
     )
+
+
+@helpdesk_staff_member_required
+def kanban_board(request):
+    huser = HelpdeskUser(request.user)
+    tickets = Ticket.objects.select_related("queue", "assigned_to").filter(
+        queue__in=huser.get_queues()
+    )
+
+    due_weeks = None
+    raw_weeks = request.GET.get("due_weeks", "").strip()
+    if raw_weeks:
+        try:
+            due_weeks = max(1, int(raw_weeks))
+            cutoff = timezone.now() + timedelta(weeks=due_weeks)
+            tickets = tickets.filter(
+                due_date__isnull=False,
+                due_date__gte=timezone.now(),
+                due_date__lte=cutoff,
+            )
+        except ValueError:
+            due_weeks = None
+
+    columns = []
+    for status_value, status_label in Ticket.STATUS_CHOICES:
+        columns.append({
+            "status": status_value,
+            "label": status_label,
+            "tickets": tickets.filter(status=status_value).order_by("due_date", "-modified"),
+        })
+
+    return render(request, "helpdesk/kanban.html", {"columns": columns, "due_weeks": due_weeks})
+
+
+@helpdesk_staff_member_required
+def kanban_update_ticket(request, ticket_id):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST required"}, status=405)
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    huser = HelpdeskUser(request.user)
+    if ticket.queue not in huser.get_queues():
+        return JsonResponse({"error": "Permission denied"}, status=403)
+    try:
+        data = json.loads(request.body)
+        new_status = int(data["status"])
+    except (KeyError, ValueError, json.JSONDecodeError):
+        return JsonResponse({"error": "Invalid data"}, status=400)
+    valid_statuses = [s for s, _ in Ticket.STATUS_CHOICES]
+    if new_status not in valid_statuses:
+        return JsonResponse({"error": "Invalid status"}, status=400)
+    ticket.status = new_status
+    ticket.save(update_fields=["status", "modified"])
+    return JsonResponse({"status": "ok", "new_status": new_status})
