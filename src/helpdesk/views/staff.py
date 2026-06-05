@@ -2245,13 +2245,19 @@ def kanban_board(request):
 
     columns = []
     for status_value, status_label in Ticket.STATUS_CHOICES:
-        columns.append({
-            "status": status_value,
-            "label": status_label,
-            "tickets": tickets.filter(status=status_value).order_by("due_date", "-modified"),
-        })
+        columns.append(
+            {
+                "status": status_value,
+                "label": status_label,
+                "tickets": tickets.filter(status=status_value).order_by(
+                    "due_date", "-modified"
+                ),
+            }
+        )
 
-    return render(request, "helpdesk/kanban.html", {"columns": columns, "due_weeks": due_weeks})
+    return render(
+        request, "helpdesk/kanban.html", {"columns": columns, "due_weeks": due_weeks}
+    )
 
 
 @helpdesk_staff_member_required
