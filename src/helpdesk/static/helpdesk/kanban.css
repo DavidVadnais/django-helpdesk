@@ -6,8 +6,7 @@
   align-items: flex-start;
 }
 .kanban-column {
-  min-width: 240px;
-  max-width: 280px;
+  min-width: 260px;
   flex: 1;
   background: #2e3440;
   border-radius: 6px;
