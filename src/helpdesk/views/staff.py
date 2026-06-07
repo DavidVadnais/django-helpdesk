@@ -2225,8 +2225,19 @@ def delete_checklist_template(request, checklist_template_id):
 @helpdesk_staff_member_required
 def kanban_board(request):
     huser = HelpdeskUser(request.user)
-    tickets = Ticket.objects.select_related("queue", "assigned_to").filter(
-        queue__in=huser.get_queues()
+    tickets = (
+        Ticket.objects.select_related("queue", "assigned_to")
+        .only(
+            "id",
+            "title",
+            "priority",
+            "status",
+            "due_date",
+            "modified",
+            "queue__title",
+            "assigned_to__username",
+        )
+        .filter(queue__in=huser.get_queues())
     )
 
     due_weeks = None
@@ -2243,17 +2254,23 @@ def kanban_board(request):
         except ValueError:
             due_weeks = None
 
-    columns = []
-    for status_value, status_label in Ticket.STATUS_CHOICES:
-        columns.append(
-            {
-                "status": status_value,
-                "label": status_label,
-                "tickets": tickets.filter(status=status_value).order_by(
-                    "due_date", "-modified"
-                ),
-            }
-        )
+    all_tickets = sorted(
+        tickets,
+        key=lambda t: (t.due_date is None, t.due_date, -t.modified.timestamp()),
+    )
+
+    bucket = {}
+    for t in all_tickets:
+        bucket.setdefault(t.status, []).append(t)
+
+    columns = [
+        {
+            "status": status_value,
+            "label": status_label,
+            "tickets": bucket.get(status_value, []),
+        }
+        for status_value, status_label in Ticket.STATUS_CHOICES
+    ]
 
     return render(
         request, "helpdesk/kanban.html", {"columns": columns, "due_weeks": due_weeks}
