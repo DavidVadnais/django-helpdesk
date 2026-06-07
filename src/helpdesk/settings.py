@@ -407,6 +407,9 @@ else:
     HELPDESK_TEAMS_MIGRATION_DEPENDENCIES = []
     HELPDESK_KBITEM_TEAM_GETTER = lambda _: None  # noqa
 
+# show kanban board?
+HELPDESK_KANBAN_ENABLED = getattr(settings, "HELPDESK_KANBAN_ENABLED", True)
+
 # show knowledgebase links?
 # If Teams mode is enabled then it has to be on
 HELPDESK_KB_ENABLED = (
