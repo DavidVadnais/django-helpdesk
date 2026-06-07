@@ -82,6 +82,10 @@ Generic Options
 ---------------
 These changes are visible throughout django-helpdesk
 
+- **HELPDESK_KANBAN_ENABLED** show the Kanban board?
+
+  **Default:** ``HELPDESK_KANBAN_ENABLED = True``
+
 - **HELPDESK_KB_ENABLED** show knowledgebase links?
 
   **Default:** ``HELPDESK_KB_ENABLED = True``

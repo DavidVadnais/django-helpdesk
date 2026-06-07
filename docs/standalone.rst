@@ -142,6 +142,7 @@ Configuration for Production Use
 ## Feature Toggles
 | Variable | Default | Description |
 |----------|---------|-------------|
+| ```HELPDESK_KANBAN_ENABLED``` | ```True``` | Enable Kanban board |
 | ```HELPDESK_KB_ENABLED``` | ```True``` | Enable knowledge base |
 | ```HELPDESK_TICKETS_TIMELINE_ENABLED``` | ```True``` | Enable ticket timeline |
 
