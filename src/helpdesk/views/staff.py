@@ -20,7 +20,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.db.models import Q, Case, When
+from django.db.models import F, Q, Case, When
 from django.forms import HiddenInput, inlineformset_factory, TextInput
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -2225,20 +2225,24 @@ def delete_checklist_template(request, checklist_template_id):
 @helpdesk_staff_member_required
 def kanban_board(request):
     huser = HelpdeskUser(request.user)
-    tickets = (
-        Ticket.objects.select_related("queue", "assigned_to")
-        .only(
-            "id",
-            "title",
-            "priority",
-            "status",
-            "due_date",
-            "modified",
-            "queue__title",
-            "assigned_to__username",
-        )
-        .filter(queue__in=huser.get_queues())
+    base_qs = Ticket.objects.select_related("queue", "assigned_to").only(
+        "id",
+        "title",
+        "priority",
+        "status",
+        "due_date",
+        "modified",
+        "queue__title",
+        "assigned_to__username",
     )
+    if (
+        helpdesk_settings.HELPDESK_ENABLE_PER_QUEUE_STAFF_PERMISSION
+        and not request.user.is_superuser
+    ):
+        queue_ids = list(huser.get_queues().values_list("pk", flat=True))
+        tickets = base_qs.filter(queue_id__in=queue_ids)
+    else:  # super users
+        tickets = base_qs.filter(queue_id__isnull=False)
 
     due_weeks = None
     raw_weeks = request.GET.get("due_weeks", "").strip()
@@ -2254,13 +2258,10 @@ def kanban_board(request):
         except ValueError:
             due_weeks = None
 
-    all_tickets = sorted(
-        tickets,
-        key=lambda t: (t.due_date is None, t.due_date, -t.modified.timestamp()),
-    )
+    tickets = tickets.order_by(F("due_date").asc(nulls_last=True), "-modified")
 
     bucket = {}
-    for t in all_tickets:
+    for t in tickets:
         bucket.setdefault(t.status, []).append(t)
 
     columns = [
