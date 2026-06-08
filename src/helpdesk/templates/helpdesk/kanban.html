@@ -29,15 +29,20 @@
                    value="{{ due_weeks|default:'' }}"
                    class="form-control form-control-sm"
                    style="width:70px;"
-                   placeholder="—">
+                   placeholder="{{ default_due_weeks|default:'—' }}">
             <span class="text-white small text-nowrap">{% trans "weeks" %}</span>
-            <div class="form-check form-check-inline mb-0 ms-1" title="{% trans "Only applies when a week range is set" %}">
+            <div class="form-check form-check-inline mb-0 ms-1">
               <input class="form-check-input" type="checkbox" id="exclude-overdue" name="exclude_overdue" value="1"{% if exclude_overdue %} checked{% endif %}>
-              <label class="form-check-label text-nowrap" id="exclude-overdue-label" for="exclude-overdue">{% trans "Exclude overdue" %}</label>
+              <label class="form-check-label text-white text-nowrap" for="exclude-overdue">{% trans "Exclude overdue" %}</label>
             </div>
             <button type="submit" class="btn btn-sm btn-primary">{% trans "Apply" %}</button>
+            {% if due_weeks and due_weeks != default_due_weeks %}
+            <a href="{% url 'helpdesk:kanban' %}" class="btn btn-sm btn-outline-secondary">{% trans "Reset" %}</a>
+            {% endif %}
             {% if due_weeks %}
-            <a href="{% url 'helpdesk:kanban' %}" class="btn btn-sm btn-outline-secondary">{% trans "Clear" %}</a>
+            <a href="{% url 'helpdesk:kanban' %}?due_weeks=0" class="btn btn-sm btn-outline-secondary">{% trans "Show all" %}</a>
+            {% elif default_due_weeks %}
+            <a href="{% url 'helpdesk:kanban' %}" class="btn btn-sm btn-outline-secondary">{% trans "Reset to default" %}</a>
             {% endif %}
           </div>
           <p class="text-white-50 small mt-1 mb-0">
@@ -47,15 +52,17 @@
       </form>
     </div>
   </div>
-  {% if due_weeks %}
-  <div class="alert alert-info mt-2 py-2 mb-0 small">
-    {% if exclude_overdue %}
-      {% blocktrans with w=due_weeks %}Showing only tickets due within the next <strong>{{ w }} week{{ w|pluralize }}</strong>. Overdue and tickets without a due date are hidden.{% endblocktrans %}
+  <div class="alert mt-2 py-2 mb-0 small {% if due_weeks %}alert-info{% else %}alert-warning{% endif %}">
+    {% if due_weeks %}
+      {% if exclude_overdue %}
+        {% blocktrans with w=due_weeks %}Showing only tickets due within the next <strong>{{ w }} week{{ w|pluralize }}</strong>. Overdue and tickets without a due date are hidden.{% endblocktrans %}
+      {% else %}
+        {% blocktrans with w=due_weeks %}Showing tickets due within the next <strong>{{ w }} week{{ w|pluralize }}</strong> plus any overdue open tickets. Tickets without a due date are hidden.{% endblocktrans %}
+      {% endif %}
     {% else %}
-      {% blocktrans with w=due_weeks %}Showing tickets due within the next <strong>{{ w }} week{{ w|pluralize }}</strong> plus any overdue open tickets. Tickets without a due date are hidden.{% endblocktrans %}
+      {% trans "Showing all tickets. No date filter is active — this may be slow with large datasets." %}
     {% endif %}
   </div>
-  {% endif %}
 </div>
 
 <div class="kanban-wrapper" id="kanban-wrapper">
@@ -176,21 +183,5 @@
   }
 })();
 
-(function () {
-  const weeksInput = document.getElementById('due-weeks-input');
-  const overdueCheck = document.getElementById('exclude-overdue');
-  const overdueLabel = document.getElementById('exclude-overdue-label');
-
-  function syncOverdue() {
-    const hasWeeks = weeksInput.value.trim() !== '';
-    overdueCheck.disabled = !hasWeeks;
-    overdueLabel.classList.toggle('text-white', hasWeeks);
-    overdueLabel.classList.toggle('text-white-50', !hasWeeks);
-    if (!hasWeeks) overdueCheck.checked = false;
-  }
-
-  weeksInput.addEventListener('input', syncOverdue);
-  syncOverdue();
-})();
 </script>
 {% endblock %}

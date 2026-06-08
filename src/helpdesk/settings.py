@@ -410,6 +410,9 @@ else:
 # show kanban board?
 HELPDESK_KANBAN_ENABLED = getattr(settings, "HELPDESK_KANBAN_ENABLED", True)
 
+# default number of weeks ahead to show tickets on the kanban board (0 or None = no filter)
+HELPDESK_KANBAN_DEFAULT_DUE_WEEKS = getattr(settings, "HELPDESK_KANBAN_DEFAULT_DUE_WEEKS", 2)
+
 # show knowledgebase links?
 # If Teams mode is enabled then it has to be on
 HELPDESK_KB_ENABLED = (
