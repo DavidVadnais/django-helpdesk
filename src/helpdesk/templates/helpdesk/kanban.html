@@ -11,32 +11,36 @@
 {% endblock %}
 
 {% block helpdesk_body %}
-<div class="mb-3">
+<div class="mb-3 p-3 rounded" style="background:#2e3440;">
   <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
     <div>
-      <h4 class="text-light mb-1">{% trans "Kanban Board" %}</h4>
-      <p class="text-secondary small mb-0">{% trans "Drag cards between columns to update their status." %}</p>
+      <h4 class="text-white mb-1">{% trans "Kanban Board" %}</h4>
+      <p class="text-white-50 small mb-0">{% trans "Drag cards between columns to update their status." %}</p>
     </div>
     <div>
       <form method="get" class="d-flex align-items-center gap-2 flex-wrap">
         <div>
-          <label for="due-weeks-input" class="text-light small fw-semibold d-block mb-1">
+          <label for="due-weeks-input" class="text-white fw-semibold d-block mb-1">
             {% trans "Filter by due date" %}
           </label>
           <div class="d-flex align-items-center gap-2">
-            <span class="text-light small text-nowrap">{% trans "Due in next" %}</span>
+            <span class="text-white small text-nowrap">{% trans "Due in next" %}</span>
             <input id="due-weeks-input" type="number" name="due_weeks" min="1" max="52"
                    value="{{ due_weeks|default:'' }}"
                    class="form-control form-control-sm"
                    style="width:70px;"
                    placeholder="—">
-            <span class="text-light small text-nowrap">{% trans "weeks" %}</span>
+            <span class="text-white small text-nowrap">{% trans "weeks" %}</span>
+            <div class="form-check form-check-inline mb-0 ms-1" title="{% trans "Only applies when a week range is set" %}">
+              <input class="form-check-input" type="checkbox" id="exclude-overdue" name="exclude_overdue" value="1"{% if exclude_overdue %} checked{% endif %}>
+              <label class="form-check-label text-nowrap" id="exclude-overdue-label" for="exclude-overdue">{% trans "Exclude overdue" %}</label>
+            </div>
             <button type="submit" class="btn btn-sm btn-primary">{% trans "Apply" %}</button>
             {% if due_weeks %}
             <a href="{% url 'helpdesk:kanban' %}" class="btn btn-sm btn-outline-secondary">{% trans "Clear" %}</a>
             {% endif %}
           </div>
-          <p class="text-secondary small mt-1 mb-0">
+          <p class="text-white-50 small mt-1 mb-0">
             {% trans "Only shows tickets with a due date set between now and the chosen number of weeks from today." %}
           </p>
         </div>
@@ -45,7 +49,11 @@
   </div>
   {% if due_weeks %}
   <div class="alert alert-info mt-2 py-2 mb-0 small">
-    {% blocktrans with w=due_weeks %}Showing only tickets due within the next <strong>{{ w }} week{{ w|pluralize }}</strong>. Tickets without a due date are hidden.{% endblocktrans %}
+    {% if exclude_overdue %}
+      {% blocktrans with w=due_weeks %}Showing only tickets due within the next <strong>{{ w }} week{{ w|pluralize }}</strong>. Overdue and tickets without a due date are hidden.{% endblocktrans %}
+    {% else %}
+      {% blocktrans with w=due_weeks %}Showing tickets due within the next <strong>{{ w }} week{{ w|pluralize }}</strong> plus any overdue open tickets. Tickets without a due date are hidden.{% endblocktrans %}
+    {% endif %}
   </div>
   {% endif %}
 </div>
@@ -72,7 +80,7 @@
           <span>&#8212; {{ ticket.assigned_to.get_username }}</span>
           {% endif %}
           {% if ticket.due_date %}
-          <span class="ms-auto text-nowrap">&#128337; {{ ticket.due_date|date:"M j" }}</span>
+          <span class="ms-auto text-nowrap {% if ticket.due_date < now %}text-danger fw-bold{% endif %}">&#128337; {{ ticket.due_date|date:"M j" }}</span>
           {% endif %}
         </div>
       </div>
@@ -166,6 +174,23 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 2500);
   }
+})();
+
+(function () {
+  const weeksInput = document.getElementById('due-weeks-input');
+  const overdueCheck = document.getElementById('exclude-overdue');
+  const overdueLabel = document.getElementById('exclude-overdue-label');
+
+  function syncOverdue() {
+    const hasWeeks = weeksInput.value.trim() !== '';
+    overdueCheck.disabled = !hasWeeks;
+    overdueLabel.classList.toggle('text-white', hasWeeks);
+    overdueLabel.classList.toggle('text-white-50', !hasWeeks);
+    if (!hasWeeks) overdueCheck.checked = false;
+  }
+
+  weeksInput.addEventListener('input', syncOverdue);
+  syncOverdue();
 })();
 </script>
 {% endblock %}

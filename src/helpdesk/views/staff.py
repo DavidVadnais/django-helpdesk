@@ -2244,16 +2244,24 @@ def kanban_board(request):
     else:  # super users
         tickets = base_qs.filter(queue_id__isnull=False)
 
+    now = timezone.now()
     due_weeks = None
+    exclude_overdue = request.GET.get("exclude_overdue") == "1"
     raw_weeks = request.GET.get("due_weeks", "").strip()
     if raw_weeks:
         try:
             due_weeks = max(1, int(raw_weeks))
-            cutoff = timezone.now() + timedelta(weeks=due_weeks)
-            tickets = tickets.filter(
+            cutoff = now + timedelta(weeks=due_weeks)
+            upcoming_q = Q(
+                due_date__isnull=False, due_date__gte=now, due_date__lte=cutoff
+            )
+            overdue_q = Q(
                 due_date__isnull=False,
-                due_date__gte=timezone.now(),
-                due_date__lte=cutoff,
+                due_date__lt=now,
+                status__in=Ticket.OPEN_STATUSES,
+            )
+            tickets = tickets.filter(
+                upcoming_q if exclude_overdue else upcoming_q | overdue_q
             )
         except ValueError:
             due_weeks = None
@@ -2274,7 +2282,14 @@ def kanban_board(request):
     ]
 
     return render(
-        request, "helpdesk/kanban.html", {"columns": columns, "due_weeks": due_weeks}
+        request,
+        "helpdesk/kanban.html",
+        {
+            "columns": columns,
+            "due_weeks": due_weeks,
+            "exclude_overdue": exclude_overdue,
+            "now": now,
+        },
     )
 
 
