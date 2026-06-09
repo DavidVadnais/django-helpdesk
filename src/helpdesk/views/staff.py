@@ -2240,7 +2240,7 @@ def kanban_board(request):
     tickets = base_qs.filter(queue_id__in=queue_ids)
 
     now = timezone.now()
-    default_due_weeks = helpdesk_settings.HELPDESK_KANBAN_DEFAULT_DUE_WEEKS or None
+    default_due_weeks = helpdesk_settings.HELPDESK_KANBAN_DEFAULT_DUE_WEEKS or 2
     exclude_overdue = request.GET.get("exclude_overdue") == "1"
     raw_weeks = request.GET.get("due_weeks", "").strip()
     try:
