@@ -2235,13 +2235,10 @@ def kanban_board(request):
         "queue__title",
         "assigned_to__username",
     )
-    if (
-        helpdesk_settings.HELPDESK_ENABLE_PER_QUEUE_STAFF_PERMISSION
-        and not request.user.is_superuser
-    ):
-        queue_ids = list(huser.get_queues().values_list("pk", flat=True))
-        tickets = base_qs.filter(queue_id__in=queue_ids)
 
+    queue_ids = list(huser.get_queues().values_list("pk", flat=True))
+    tickets = base_qs.filter(queue_id__in=queue_ids)
+    
     now = timezone.now()
     default_due_weeks = helpdesk_settings.HELPDESK_KANBAN_DEFAULT_DUE_WEEKS or None
     exclude_overdue = request.GET.get("exclude_overdue") == "1"
