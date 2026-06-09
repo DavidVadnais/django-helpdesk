@@ -415,6 +415,11 @@ HELPDESK_KANBAN_DEFAULT_DUE_WEEKS = getattr(
     settings, "HELPDESK_KANBAN_DEFAULT_DUE_WEEKS", 2
 )
 
+# hide closed/duplicate tickets last modified more than this many weeks ago (0 or None = show all)
+HELPDESK_KANBAN_DEFAULT_RENDER_CLOSED_TICKETS_WEEKS = getattr(
+    settings, "HELPDESK_KANBAN_DEFAULT_RENDER_CLOSED_TICKETS_WEEKS", 6
+)
+
 # show knowledgebase links?
 # If Teams mode is enabled then it has to be on
 HELPDESK_KB_ENABLED = (

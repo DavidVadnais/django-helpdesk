@@ -2238,7 +2238,7 @@ def kanban_board(request):
 
     queue_ids = list(huser.get_queues().values_list("pk", flat=True))
     tickets = base_qs.filter(queue_id__in=queue_ids)
-    
+
     now = timezone.now()
     default_due_weeks = helpdesk_settings.HELPDESK_KANBAN_DEFAULT_DUE_WEEKS or None
     exclude_overdue = request.GET.get("exclude_overdue") == "1"
@@ -2262,6 +2262,16 @@ def kanban_board(request):
         )
         tickets = tickets.filter(
             upcoming_q if exclude_overdue else upcoming_q | overdue_q
+        )
+
+    closed_weeks = (
+        helpdesk_settings.HELPDESK_KANBAN_DEFAULT_RENDER_CLOSED_TICKETS_WEEKS or None
+    )
+    if closed_weeks:
+        closed_cutoff = now - timedelta(weeks=closed_weeks)
+        closed_statuses = [Ticket.CLOSED_STATUS, Ticket.DUPLICATE_STATUS]
+        tickets = tickets.exclude(
+            status__in=closed_statuses, modified__lt=closed_cutoff
         )
 
     tickets = tickets.order_by(F("due_date").asc(nulls_last=True), "-modified")
