@@ -36,4 +36,4 @@ jobs:
 
     - name: If we are at a tag, add a tag to the current docker image push the image with the tag
       if: startsWith(github.ref, 'refs/tags/')
-      run: docker tag djangohelpdesk/standalone:latest djangohelpdesk/standalone:${{ github.ref }} ; docker push djangohelpdesk/standalone:${{ github.ref }}
+      run: docker tag djangohelpdesk/standalone:latest djangohelpdesk/standalone:${{ github.ref_name }} ; docker push djangohelpdesk/standalone:${{ github.ref_name }}
