@@ -118,6 +118,11 @@ HELPDESK_SUBMIT_A_TICKET_PUBLIC = True
 # Should the Knowledgebase be enabled?
 HELPDESK_KB_ENABLED = True
 
+# Should the Kanban board be enabled?
+HELPDESK_KANBAN_ENABLED = True
+HELPDESK_KANBAN_DEFAULT_DUE_WEEKS = None
+HELPDESK_KANBAN_DEFAULT_RENDER_CLOSED_TICKETS_WEEKS = 6
+
 HELPDESK_TICKETS_TIMELINE_ENABLED = True
 
 # Instead of showing the public web portal first,

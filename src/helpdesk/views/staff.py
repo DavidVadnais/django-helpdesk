@@ -20,7 +20,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.db.models import Q, Case, When
+from django.db.models import F, Q, Case, When
 from django.forms import HiddenInput, inlineformset_factory, TextInput
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -2220,3 +2220,104 @@ def delete_checklist_template(request, checklist_template_id):
             "checklist_template": checklist_template,
         },
     )
+
+
+@helpdesk_staff_member_required
+def kanban_board(request):
+    huser = HelpdeskUser(request.user)
+    base_qs = Ticket.objects.select_related("queue", "assigned_to").only(
+        "id",
+        "title",
+        "priority",
+        "status",
+        "due_date",
+        "modified",
+        "queue__title",
+        "assigned_to__username",
+    )
+
+    queue_ids = list(huser.get_queues().values_list("pk", flat=True))
+    tickets = base_qs.filter(queue_id__in=queue_ids)
+
+    now = timezone.now()
+    default_due_weeks = helpdesk_settings.HELPDESK_KANBAN_DEFAULT_DUE_WEEKS or 2
+    exclude_overdue = request.GET.get("exclude_overdue") == "1"
+    raw_weeks = request.GET.get("due_weeks", "").strip()
+    try:
+        parsed = int(raw_weeks) if raw_weeks else None
+        if parsed is None:
+            due_weeks = default_due_weeks  # no param → use default
+        elif parsed <= 0:
+            due_weeks = None  # explicit 0 → show all
+        else:
+            due_weeks = parsed
+    except ValueError:
+        due_weeks = default_due_weeks
+
+    if due_weeks:
+        cutoff = now + timedelta(weeks=due_weeks)
+        upcoming_q = Q(due_date__isnull=False, due_date__gte=now, due_date__lte=cutoff)
+        overdue_q = Q(
+            due_date__isnull=False, due_date__lt=now, status__in=Ticket.OPEN_STATUSES
+        )
+        tickets = tickets.filter(
+            upcoming_q if exclude_overdue else upcoming_q | overdue_q
+        )
+
+    closed_weeks = (
+        helpdesk_settings.HELPDESK_KANBAN_DEFAULT_RENDER_CLOSED_TICKETS_WEEKS or None
+    )
+    if closed_weeks:
+        closed_cutoff = now - timedelta(weeks=closed_weeks)
+        closed_statuses = [Ticket.CLOSED_STATUS, Ticket.DUPLICATE_STATUS]
+        tickets = tickets.exclude(
+            status__in=closed_statuses, modified__lt=closed_cutoff
+        )
+
+    tickets = tickets.order_by(F("due_date").asc(nulls_last=True), "-modified")
+
+    bucket = {}
+    for t in tickets:
+        bucket.setdefault(t.status, []).append(t)
+
+    columns = [
+        {
+            "status": status_value,
+            "label": status_label,
+            "tickets": bucket.get(status_value, []),
+        }
+        for status_value, status_label in Ticket.STATUS_CHOICES
+    ]
+
+    return render(
+        request,
+        "helpdesk/kanban.html",
+        {
+            "columns": columns,
+            "due_weeks": due_weeks,
+            "default_due_weeks": default_due_weeks,
+            "exclude_overdue": exclude_overdue,
+            "now": now,
+        },
+    )
+
+
+@helpdesk_staff_member_required
+def kanban_update_ticket(request, ticket_id):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST required"}, status=405)
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    huser = HelpdeskUser(request.user)
+    if ticket.queue not in huser.get_queues():
+        return JsonResponse({"error": "Permission denied"}, status=403)
+    try:
+        data = json.loads(request.body)
+        new_status = int(data["status"])
+    except (KeyError, ValueError, json.JSONDecodeError):
+        return JsonResponse({"error": "Invalid data"}, status=400)
+    valid_statuses = [s for s, _ in Ticket.STATUS_CHOICES]
+    if new_status not in valid_statuses:
+        return JsonResponse({"error": "Invalid status"}, status=400)
+    ticket.status = new_status
+    ticket.save(update_fields=["status", "modified"])
+    return JsonResponse({"status": "ok", "new_status": new_status})

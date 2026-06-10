@@ -169,6 +169,15 @@ if helpdesk_settings.HELPDESK_UI_ENABLED:
         path("view/", protect_view(public.ViewTicket.as_view()), name="public_view"),
         path("change_language/", public.change_language, name="public_change_language"),
     ]
+    if helpdesk_settings.HELPDESK_KANBAN_ENABLED:
+        urlpatterns += [
+            path("kanban/", staff.kanban_board, name="kanban"),
+            path(
+                "tickets/<int:ticket_id>/kanban-update/",
+                staff.kanban_update_ticket,
+                name="kanban_update",
+            ),
+        ]
     if helpdesk_settings.HELPDESK_ENABLE_DEPENDENCIES_ON_TICKET:
         urlpatterns += [
             path(

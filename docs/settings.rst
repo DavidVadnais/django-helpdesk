@@ -82,6 +82,18 @@ Generic Options
 ---------------
 These changes are visible throughout django-helpdesk
 
+- **HELPDESK_KANBAN_ENABLED** show the Kanban board?
+
+  **Default:** ``HELPDESK_KANBAN_ENABLED = True``
+
+- **HELPDESK_KANBAN_DEFAULT_DUE_WEEKS** default number of weeks ahead used by the Kanban board's due-date filter (more Scrum like). On first load (no filter parameters in the URL) the board shows tickets due within this many weeks plus any overdue open tickets. Set to ``0`` or ``None`` to show all tickets by default (Makes it more Kanban like - not recommended for large datasets).
+
+  **Default:** ``HELPDESK_KANBAN_DEFAULT_DUE_WEEKS = 2``
+
+- **HELPDESK_KANBAN_DEFAULT_RENDER_CLOSED_TICKETS_WEEKS** hides closed and duplicate tickets that have not been modified within this many weeks. Tickets with a ``Closed`` or ``Duplicate`` status whose ``modified`` timestamp is older than the cutoff are excluded from the board. Set to ``0`` or ``None`` to always show all closed and duplicate tickets regardless of age.
+
+  **Default:** ``HELPDESK_KANBAN_DEFAULT_RENDER_CLOSED_TICKETS_WEEKS = 6``
+
 - **HELPDESK_KB_ENABLED** show knowledgebase links?
 
   **Default:** ``HELPDESK_KB_ENABLED = True``

@@ -407,6 +407,19 @@ else:
     HELPDESK_TEAMS_MIGRATION_DEPENDENCIES = []
     HELPDESK_KBITEM_TEAM_GETTER = lambda _: None  # noqa
 
+# show kanban board?
+HELPDESK_KANBAN_ENABLED = getattr(settings, "HELPDESK_KANBAN_ENABLED", True)
+
+# default number of weeks ahead to show tickets on the kanban board (0 or None = no filter)
+HELPDESK_KANBAN_DEFAULT_DUE_WEEKS = getattr(
+    settings, "HELPDESK_KANBAN_DEFAULT_DUE_WEEKS", 2
+)
+
+# hide closed/duplicate tickets last modified more than this many weeks ago (0 or None = show all)
+HELPDESK_KANBAN_DEFAULT_RENDER_CLOSED_TICKETS_WEEKS = getattr(
+    settings, "HELPDESK_KANBAN_DEFAULT_RENDER_CLOSED_TICKETS_WEEKS", 6
+)
+
 # show knowledgebase links?
 # If Teams mode is enabled then it has to be on
 HELPDESK_KB_ENABLED = (
