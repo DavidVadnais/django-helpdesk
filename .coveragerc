@@ -2,7 +2,7 @@
 # following the example at http://nedbatchelder.com/code/coverage/config.html
 [run]
 branch = True
-include = helpdesk/*
+source = src/helpdesk
 omit =
     *helpdesk/migrations/*
 
